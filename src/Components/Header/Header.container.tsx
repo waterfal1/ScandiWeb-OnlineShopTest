@@ -15,7 +15,8 @@ class HeaderContainer extends React.Component<{stateCurrency: string,
   render() {
     return <Header stateCurrency={this.props.stateCurrency} setCurrency={this.props.setCurrency}
                    categoryThings={this.props.categoryThings} setNewCategory={this.props.setNewCategory}
-                   stateSelectedItem={this.props.stateSelectedItem} setGoods={this.props.setGoods} />;
+                   stateSelectedItem={this.props.stateSelectedItem} setGoods={this.props.setGoods}
+    />;
   }
 }
 

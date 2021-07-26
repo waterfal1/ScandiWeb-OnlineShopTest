@@ -9,7 +9,7 @@ export default class HeaderCurrencies extends React.Component<{
       <div className='currency-list'>
         {this.props.currencies.map((currency: { currency: string }, index: number) => (
           <div key={index} onClick={() => this.props.handleCurrency(String(index))}>
-            <span id={String(index)}>{currenciesSigns[index]}</span> {currency.currency}
+            <span id={String(index)}>{currenciesSigns[index]}</span>{currency.currency}
           </div>))}
       </div>)
   }

@@ -7,12 +7,14 @@ import HeaderCurrencies from './HeaderCurrencies.component';
 import CartMenu from './HeaderCartMenu.component';
 import { query } from '../../Pages/Home/getData';
 import { ApolloQueryResult } from '@apollo/client';
+import {goodsCollection} from "../Cart/countFunctions";
 
 export default class Header extends React.Component<{stateCurrency: string,
   setCurrency: (value: string) => {type: string, payload: string}, categoryThings: string,
   setNewCategory:  (value: string) => {type: string, payload: string}, stateSelectedItem: number,
   setGoods: (value: number) => {type: string, payload: number} }, {cartBar: boolean, activeCategoryId: number,
   currentCurrency: string, cartWindowClose: boolean, loading: boolean, data: ApolloQueryResult<any> }> {
+  private wrapperRef: React.RefObject<HTMLDivElement>;
 
   constructor(props: { stateCurrency: string; setCurrency: (value: string) => { type: string; payload: string; };
   categoryThings: string; setNewCategory: (value: string) => { type: string; payload: string; };
@@ -21,6 +23,7 @@ export default class Header extends React.Component<{stateCurrency: string,
     categoryThings: string; setNewCategory: (value: string) => { type: string; payload: string; };
     stateSelectedItem: number; setGoods: (value: number) => { type: string; payload: number; }; }>) {
     super(props)
+    this.wrapperRef = React.createRef();
     this.state = {data: {data: {}, loading: false, networkStatus: 0}, cartBar: false, activeCategoryId: 0,
       currentCurrency: '$', cartWindowClose: false, loading: false }
   }
@@ -40,6 +43,18 @@ export default class Header extends React.Component<{stateCurrency: string,
         .then(result => {
           this.setState({loading: true, data: result})
         })
+    document.addEventListener('mousedown', this.handleClickOutside);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleClickOutside);
+  }
+
+  handleClickOutside = (event: {target: any}): void => {
+    if (this.wrapperRef.current === null) { return }
+    if (this.wrapperRef && !this.wrapperRef.current.contains(event.target)) {
+      this.setState({ cartBar: false, cartWindowClose: false })
+    }
   }
 
   lightChange(newCategoryId: number, categoryName: string) {
@@ -55,22 +70,21 @@ export default class Header extends React.Component<{stateCurrency: string,
 
   navbarLinks() {
     const products = this.state.data.data.category.products;
-    // @ts-ignore
     return products
       .map((product: {category: string}) => product.category)
       .reduce((accum: string, current: string) => {
         return accum.includes(current) ? accum : [accum, current]})
       .map((category: string, index: number) => {
       return (
-          <NavLink key={index} to='/'>
-        <li key={index} className={'nav-text_row'}>
-          <div onClick={() => this.lightChange(index, category)} id={'navbar-text' + String(`${index}`)}
-             className={this.state.activeCategoryId === index && this.state.activeCategoryId !== 0
+        <NavLink key={index} to='/'>
+          <li key={index} className='nav-text_row'>
+            <div onClick={() => this.lightChange(index, category)} id={'navbar-text' + String(`${index}`)}
+               className={this.state.activeCategoryId === index && this.state.activeCategoryId !== 0
                  ? 'navbar-link-block text-active' : 'navbar-link-block'}>
-            {category}
-          </div>
-        </li>
-      </NavLink>
+            {category.toUpperCase()}
+            </div>
+          </li>
+        </NavLink>
       );
     })
   }
@@ -84,6 +98,7 @@ export default class Header extends React.Component<{stateCurrency: string,
     const currency = document.getElementById(index)
     if (currency === null) {return; }
     this.setState({ cartBar: false, currentCurrency: currency.innerHTML })
+    sessionStorage.setItem('Currency', currency.innerHTML);
   }
 
   changeCurrency = (): void => {
@@ -101,14 +116,16 @@ export default class Header extends React.Component<{stateCurrency: string,
   }
 
   toggleCartWindow = (): void => {
-    this.setState({ cartWindowClose: false })
+    this.setState({ cartWindowClose: false, cartBar: false })
   }
 
   render(): React.ReactNode {
     if (!this.state.loading)
       return '....Loading'
     const { cartWindowClose, currentCurrency, cartBar } = this.state;
-    const currencies = this.state.data.data.category.products[0].prices
+    const currencies = this.state.data.data.category.products[0].prices;
+    const goodsFromStorage = JSON.parse(sessionStorage.getItem('Goods') as string);
+    const goodsAmount = goodsCollection(goodsFromStorage);
     return (
       <>
         {cartWindowClose ? <div onClick={this.toggleCartWindow} className='dark-side' /> : <></>}
@@ -117,16 +134,16 @@ export default class Header extends React.Component<{stateCurrency: string,
           <NavLink to='/'>
             <img onClick={this.backButton} src={logo} alt='Back Button' />
           </NavLink>
-          <div className='currency-icons'>
-            <div className='column-container'>
+          <div ref={this.wrapperRef} className='currency-icons'>
+            <div  className='column-container'>
               <div className='currency-container' onClick={this.changeCurrency}>
-                {currentCurrency}
+                {sessionStorage.getItem('Currency') ? sessionStorage.getItem('Currency') : currentCurrency}
                 <div className='arrow-down' />
               </div>
               {cartBar ? <HeaderCurrencies currencies={currencies} handleCurrency={this.handleCurrency} /> : <></>}
             </div>
             <img onClick={this.setCartBar} className='a-number-of' src={cart} alt='Cart' />
-              {sessionStorage.length > 0 ? <div className='number'>{sessionStorage.length}</div>: <></>}
+              {sessionStorage.length > 0 ? <div className='number'>{goodsAmount.length}</div>: <></>}
             {cartWindowClose ?
             <CartMenu toggleCartWindow={this.toggleCartWindow} stateCurrency={this.props.stateCurrency}
                       setCurrency={this.props.setCurrency} stateSelectedItem={this.props.stateSelectedItem}

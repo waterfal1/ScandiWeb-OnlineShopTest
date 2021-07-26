@@ -1,12 +1,13 @@
 import React from 'react';
+import * as _ from "lodash";
 import '../../Pages/Goods/Goods.styles.scss';
-import SelectedAttributes from "./Cart.GoodsAtrributesSelected.component";
-import NonSelectedAttributes from "./Cart.GoodsNonAttributeSelected.component";
-import {NavLink} from "react-router-dom";
-import {goodsCollection, removeGoods} from "./countFunctions";
+import NonSelectedAttributes from './Cart.GoodsNonAttributeSelected.component';
+import SelectedAttributesHeader from '../Header/SelectedAttributesHeader';
+import AttributesCart from './AttributesCart';
+import { NavLink } from 'react-router-dom';
+import { goodsCollection } from './countFunctions';
 
-export default class GoodsInCart extends React.Component<{
-  data: {
+export default class GoodsInCart extends React.Component<{ data: {
     products: {
       id: string, name: string,
       prices: { amount: string, currency: string }[], gallery: string[],
@@ -16,7 +17,7 @@ export default class GoodsInCart extends React.Component<{
   setGoods: (value: number) => { type: string, payload: number }
 }, {
   attribute: number, setAmount: boolean,
-  amounts: number[], imageState: number[], attributesState: number[], stateRender: boolean
+  amounts: any, imageState: number[], stateRender: boolean
 }> {
 
   constructor(props: {
@@ -40,44 +41,46 @@ export default class GoodsInCart extends React.Component<{
     }>) {
     super(props)
     this.state = {
-      attribute: 0, setAmount: false, amounts: [], imageState: [], attributesState: [],
+      attribute: 0, setAmount: false, amounts: [], imageState: [],
       stateRender: true
     }
   }
 
-  attributeSelected = (index: number, newAttributeIndex: number): void => {
-    const newState = this.state.attributesState;
-    newState[index] = newAttributeIndex;
-    this.setState({attributesState: newState});
+  attributeSelected = (num: number, productIndex: number, attributeIndex: number, index: number): void => {
+    const fromStorage = JSON.parse(sessionStorage.getItem('Goods') as string);
+    const goodsAmount = goodsCollection(fromStorage);
+    goodsAmount.map((item: any, ind: number) => {
+      if (ind === num) {
+        item[1][0][attributeIndex] = String(index)
+      }
+    })
+    const res = goodsAmount.map((item: any) => [item[0], _.flatten(item[1])]);
+    sessionStorage.removeItem('Goods');
+    sessionStorage.setItem('Goods', JSON.stringify(res));
+    this.props.setGoods(this.props.stateSelectedItem + 1)
   }
 
   componentDidMount(): void {
     this.setState({setAmount: true})
   }
 
-  setAmount = (amounts: number[]): void => {
-    this.setState({amounts: amounts})
-  }
-
-  setNewPlusAmount = (index: number, productIndexes: number[]): void => {
-    sessionStorage.setItem(String(this.props.stateSelectedItem + 1), productIndexes[0] + ' ' + productIndexes[1]);
-    const newState = this.state.amounts;
-    newState[index] = this.state.amounts[index] + 1;
-    this.setState({amounts: newState});
+  setNewPlusAmount = (productIndexes: (number[] | any)[]): void => {
+    const goodsFromStorage = JSON.parse(sessionStorage.getItem('Goods') as string);
+    goodsFromStorage.push([productIndexes[0], [parseInt(productIndexes[1],10)]]);
+    sessionStorage.setItem('Goods', JSON.stringify(goodsFromStorage));
     this.props.setGoods(this.props.stateSelectedItem + 1)
   }
 
-  setNewMinusAmount = (index: number, productIndexes: number[]): void | undefined => {
-    removeGoods(productIndexes)
-    if (this.state.amounts[index] === 1) {
-      const newState = this.state.amounts;
-      newState.splice(index, 1)
-      this.setState({amounts: newState});
-      return;
-    }
-    const newState = this.state.amounts
-    newState[index] = this.state.amounts[index] - 1;
-    this.setState({amounts: newState});
+  setNewMinusAmount = (productIndexes: (number[] | any)[]): void | undefined => {
+    const goodsFromStorage = JSON.parse(sessionStorage.getItem('Goods') as string);
+    goodsFromStorage.splice(goodsFromStorage.map((element: any, index: number) =>
+    {if (element[0] === productIndexes[0] && element[1].map((item: number, ind: number) => {return item === productIndexes[1][ind]}))
+      return index
+    })
+      .filter((value: number[] | undefined) => value)[0], 1)
+    sessionStorage.removeItem('Goods');
+    sessionStorage.setItem('Goods', JSON.stringify(goodsFromStorage));
+    this.props.setGoods(this.props.stateSelectedItem + 1)
   }
 
   changeImagePlus = (index: number, length: number): void => {
@@ -102,62 +105,70 @@ export default class GoodsInCart extends React.Component<{
     this.setState({imageState: images});
   }
 
-  setAttributes = (attributes: number[]): void => {
-    this.setState({attributesState: attributes})
+  chosedGoods = (input: string): void => {
+    localStorage.setItem('goodsSelected', input);
   }
 
   render() {
-    const goodsFromStorage: string[] = Object.values(sessionStorage).map((item) => item.split(' '));
+    const goodsFromStorage = JSON.parse(sessionStorage.getItem('Goods') as string);
     const goodsAmount = goodsCollection(goodsFromStorage);
-    const amount = goodsAmount.map((item: number[]) => item[2]);
-    const attributes = goodsAmount.map((item: number[]) => item[1]);
     if (!this.state.setAmount) {
-      const images = new Array(amount.length).fill(0, 0, amount.length);
+      const images = new Array(goodsAmount.length).fill(0, 0, goodsAmount.length);
       this.setImagesState(images);
-      this.setAmount(amount);
-      this.setAttributes(attributes);
     }
+    const stateCurrency  = this.props.stateCurrency;
     const products = this.props.data.products;
+    const res = _.flatten(goodsAmount.map((item: any) => {
+      return products.map((el: {id: string, name: string, gallery: string[],
+        prices: {amount: string, currency: string}[]}, index: number) => {
+        if (item[0] === el.id)
+          return index
+        // @ts-ignore
+      }).filter((value: number) => value || value === 0)
+    }))
     return (
-      <>
-        {goodsAmount.map((productIndexes: number[], index: number) => (
-          <div key={index} className='cart-common-container'>
+        <>{res.map((productIndexes: any, num: number) => (
+          <div key={num} className='cart-common-container'>
             <div className='cart-goods-container'>
-              <NavLink to='/goods'>
-                <p className='cart-first-text'>{products[productIndexes[0]].name}</p>
-                <p className='cart-first-text grey-color'>{products[productIndexes[0]].id}</p>
+              <NavLink to='/goods' onClick={() => this.chosedGoods(products[productIndexes].id)}>
+                <p className='cart-first-text'>{products[productIndexes].name}</p>
+                <p className='cart-first-text weight-normal'>{products[productIndexes].id}</p>
                 <p className='cart-goods-padding'>
-                  {products[productIndexes[0]].prices[parseInt(this.props.stateCurrency, 10)].currency}
-                  {' '}{products[productIndexes[0]].prices[parseInt(this.props.stateCurrency, 10)].amount}
+                  {sessionStorage.getItem('Currency') ? sessionStorage.getItem('Currency') : <>&#36;</>}
+                  {products[productIndexes].prices[parseInt(stateCurrency, 10)].amount}
                 </p>
               </NavLink>
               <div className='cart-attributes cart-goods-padding'>
-                {products[productIndexes[0]].attributes.length !== 0 ?
-                  products[productIndexes[0]].attributes[0].items.map((el: { displayValue: string }, number: number) =>
-                    (this.state.attributesState[index] === number ?
-                      <SelectedAttributes index={index} ind={number}
-                                          attributeSelected={() => this.attributeSelected(index, number)}
-                                          displayValue={el.displayValue}/> :
-                      <NonSelectedAttributes index={index} ind={number} attributeSelected={() =>
-                        this.attributeSelected(index, number)} displayValue={el.displayValue}/>)) : <></>}
+                {products[productIndexes].attributes.length !== 0 ? products[productIndexes].attributes
+                  .map((element: any, index: number) => (   <div key={element.id} className='attributes-columns'>
+                    <AttributesCart attributeName={element.name} /><div className='cart-attribute-row' key={index}>
+                    {element.items
+                      // @ts-ignore
+                      .map((item: any, ind: number) => (goodsAmount[num][1][0][index] == ind ?
+                        <SelectedAttributesHeader key={ind} attributeSelected={() => this.attributeSelected(num, productIndexes, index, ind)}
+                                                  displayValue={item.displayValue} /> :
+                        <NonSelectedAttributes index={index} ind={ind} attributeSelected={() =>
+                          this.attributeSelected(num, productIndexes, index, ind)} displayValue={item.displayValue} />))}</div></div>)) : <></>}
               </div>
             </div>
             <div className='cart-center-flex-element'>
-              <button onClick={() => this.setNewPlusAmount(index, productIndexes)} className='btn-counter'>+</button>
-              {this.state.setAmount ? this.state.amounts[index] : productIndexes[1]}
-              <button onClick={() => this.setNewMinusAmount(index, productIndexes)} className='btn-counter'>-</button>
+              <button onClick={() => this.setNewPlusAmount(goodsAmount[num])} className='cart-window-counter-btn'>+</button>
+                {goodsAmount[num][2]}
+              <button onClick={() => this.setNewMinusAmount(goodsAmount[num])} className='cart-window-counter-btn'>-</button>
             </div>
             <div className='cart-third-flex-element'>
               <img className='cart-small-img'
-                   src={products[productIndexes[0]].gallery[this.state.imageState[index]]} alt='picture1'/>
-              <div onClick={() => this.changeImageMinus(index, products[productIndexes[0]].gallery.length)}
-                   className='arrow-rev arrow-left-rev pointer'/>
-              <div onClick={() => this.changeImagePlus(index, products[productIndexes[0]].gallery.length)}
-                   className='arrow-rev arrow-right-rev pointer'/>
+                   src={products[productIndexes].gallery[this.state.imageState[num]]} alt='picture1'/>
+              {products[productIndexes].gallery.length > 1 ?
+                <><div onClick={() => this.changeImageMinus(num, products[productIndexes].gallery.length)}
+                     className='arrow-rev arrow-left-rev pointer'/>
+                <div onClick={() => this.changeImagePlus(num, products[productIndexes].gallery.length)}
+                     className='arrow-rev arrow-right-rev pointer'/></> : <></>
+              }
             </div>
           </div>
         ))}
-      </>
+        </>
     )
   }
 }

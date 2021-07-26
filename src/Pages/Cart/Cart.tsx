@@ -3,6 +3,7 @@ import './Cart.styles.scss';
 import { query } from '../Home/getData';
 import { ApolloQueryResult } from '@apollo/client';
 import GoodsInCart from '../../Components/Cart/Cart.component';
+import {goodsCollection} from "../../Components/Cart/countFunctions";
 
 export default class Cart extends React.Component<{
   stateCurrency: string,
@@ -30,6 +31,7 @@ export default class Cart extends React.Component<{
         name
         gallery
         attributes {
+        name
         items {
         displayValue
         }}
@@ -40,17 +42,21 @@ export default class Cart extends React.Component<{
       }}
     `)
       .then(result => {
+        console.log(result)
         this.setState({loading: true, data: result})
       })
   }
 
   render() {
     if (!this.state.loading)
-      return '....Loading'
+      return '....Loading';
+    const goodsFromStorage = JSON.parse(sessionStorage.getItem('Goods') as string);
+    const goodsAmount = goodsCollection(goodsFromStorage);
+    console.log(this.props.stateSelectedItem);
     return (
       <section>
         <div className='cart-name'>Cart</div>
-        <div> {sessionStorage.length === 0 ? <div className='cart-name'>You cart is empty</div> :
+        <div> {goodsAmount.length === 0 ? <div className='cart-name'>You cart is empty</div> :
           <GoodsInCart stateCurrency={this.props.stateCurrency} stateSelectedItem={this.props.stateSelectedItem}
                        setGoods={this.props.setGoods} data={this.state.data.data.category}/>}
         </div>
