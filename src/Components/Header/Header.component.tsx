@@ -3,25 +3,23 @@ import './Header.style.scss';
 import { NavLink } from 'react-router-dom';
 import logo from '../../assets/a-logo.svg';
 import cart from '../../assets/cart.svg';
-import HeaderCurrencies from './HeaderCurrencies.component';
-import CartMenu from './HeaderCartMenu.component';
+import HeaderCurrencies from './Currencies';
+import CartMenu from './CartMenu';
 import { query } from '../../Pages/Home/getData';
 import { ApolloQueryResult } from '@apollo/client';
-import {goodsCollection} from "../Cart/countFunctions";
+import { goodsCollection } from "../functions";
 
 export default class Header extends React.Component<{stateCurrency: string,
   setCurrency: (value: string) => {type: string, payload: string}, categoryThings: string,
   setNewCategory:  (value: string) => {type: string, payload: string}, stateSelectedItem: number,
   setGoods: (value: number) => {type: string, payload: number} }, {cartBar: boolean, activeCategoryId: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   currentCurrency: string, cartWindowClose: boolean, loading: boolean, data: ApolloQueryResult<any> }> {
   private wrapperRef: React.RefObject<HTMLDivElement>;
 
   constructor(props: { stateCurrency: string; setCurrency: (value: string) => { type: string; payload: string; };
   categoryThings: string; setNewCategory: (value: string) => { type: string; payload: string; };
-  stateSelectedItem: number; setGoods: (value: number) => { type: string; payload: number; }; } |
-    Readonly<{ stateCurrency: string; setCurrency: (value: string) => { type: string; payload: string; };
-    categoryThings: string; setNewCategory: (value: string) => { type: string; payload: string; };
-    stateSelectedItem: number; setGoods: (value: number) => { type: string; payload: number; }; }>) {
+  stateSelectedItem: number; setGoods: (value: number) => { type: string; payload: number; }; }) {
     super(props)
     this.wrapperRef = React.createRef();
     this.state = {data: {data: {}, loading: false, networkStatus: 0}, cartBar: false, activeCategoryId: 0,
@@ -50,6 +48,7 @@ export default class Header extends React.Component<{stateCurrency: string,
     document.removeEventListener('mousedown', this.handleClickOutside);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handleClickOutside = (event: {target: any}): void => {
     if (this.wrapperRef.current === null) { return }
     if (this.wrapperRef && !this.wrapperRef.current.contains(event.target)) {
@@ -144,11 +143,11 @@ export default class Header extends React.Component<{stateCurrency: string,
             </div>
             <img onClick={this.setCartBar} className='a-number-of' src={cart} alt='Cart' />
               {sessionStorage.length > 0 ? <div className='number'>{goodsAmount.length}</div>: <></>}
-            {cartWindowClose ?
-            <CartMenu toggleCartWindow={this.toggleCartWindow} stateCurrency={this.props.stateCurrency}
-                      setCurrency={this.props.setCurrency} stateSelectedItem={this.props.stateSelectedItem}
-                      setGoods={this.props.setGoods} />
-             : <></>}
+              {cartWindowClose
+              ? <CartMenu toggleCartWindow={this.toggleCartWindow} stateCurrency={this.props.stateCurrency}
+                          setCurrency={this.props.setCurrency} stateSelectedItem={this.props.stateSelectedItem}
+                          setGoods={this.props.setGoods} />
+              : <></>}
           </div>
         </nav>
       </>

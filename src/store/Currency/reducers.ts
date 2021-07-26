@@ -1,8 +1,8 @@
 export const initialState = {
-  value: 0,
+  value: '',
 }
 
-export function currencyReducer(state: any = initialState, action: any) {
+export function currencyReducer(state: {value: string} = initialState, action: { type: string; payload: string; }) {
   switch (action.type) {
     case 'CURRENCY_CHANGE':
       return { ...state, value: action.payload}

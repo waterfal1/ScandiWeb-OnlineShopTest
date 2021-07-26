@@ -2,13 +2,14 @@ import React from 'react';
 import './Cart.styles.scss';
 import { query } from '../Home/getData';
 import { ApolloQueryResult } from '@apollo/client';
-import GoodsInCart from '../../Components/Cart/Cart.component';
-import {goodsCollection} from "../../Components/Cart/countFunctions";
+import GoodsInCart from '../../Components/Cart/Cart';
+import {goodsCollection} from "../../Components/functions";
 
 export default class Cart extends React.Component<{
   stateCurrency: string,
   setCurrency: (value: string) => { type: string, payload: string }, stateSelectedItem: number,
   setGoods: (value: number) => { type: string, payload: number } },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   { data: ApolloQueryResult<any>, loading: boolean }> {
 
   constructor(props: {

@@ -4,16 +4,18 @@ import {ApolloQueryResult} from '@apollo/client';
 import InStock from '../../Components/Stock/InStock';
 import NotInStock from '../../Components/Stock/NotInStock';
 import { query } from './getData'
+import {addGoodsToStorage, productsAttributes} from "../../Components/functions";
 
 export default class Home extends React.Component<{
   setCurrency: (value: string) => { type: string, payload: string }, stateSelectedItem: number,
   setGoods: (value: number) => { type: string, payload: number }, stateCurrency: string, categoryThings: string,
-  setNewCategory: (value: string) => { type: string, payload: string }, stateCounter: number,
-  addCounter: (value: number) => { type: string, payload: number } }, {
-  loading: boolean, counter: number,
+  setNewCategory: (value: string) => { type: string, payload: string }}, { loading: boolean, counter: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: ApolloQueryResult<any>, loadAttributes: boolean, attributes: [number[]] }> {
   private currentCategory: string;
-  constructor(props: any) {
+  constructor(props: { setCurrency: (value: string) => { type: string; payload: string; }; stateSelectedItem: number;
+  setGoods: (value: number) => { type: string; payload: number; }; stateCurrency: string; categoryThings: string;
+  setNewCategory: (value: string) => { type: string; payload: string; }; }) {
     super(props)
     this.state = {data: {data: {}, loading: false, networkStatus: 0}, loading: false, counter: 0, loadAttributes: false,
       attributes: [[0]]};
@@ -56,23 +58,14 @@ export default class Home extends React.Component<{
       }
     `)
       .then((result) => {
-        console.log(result)
         this.setState({loading: true, data: result})
       })
   }
 
   increment = (id: string, attributes: number[]): void => {
-    const goodsFromStorage = JSON.parse(sessionStorage.getItem('Goods') as string);
-    if (goodsFromStorage) {
-      goodsFromStorage.push([id, attributes]);
-      sessionStorage.setItem('Goods', JSON.stringify(goodsFromStorage));
-    }
-    else {
-      sessionStorage.setItem('Goods', JSON.stringify([[id, attributes]]));
-    }
+    addGoodsToStorage(id, attributes)
     this.setState({counter: this.state.counter + 1});
-    this.props.addCounter(this.state.counter + 1);
-    // this.props.setGoods(this.props.stateSelectedItem + 1);
+    this.props.setGoods(this.props.stateSelectedItem + 1);
   }
 
   choseGoods = (input: string): void => {
@@ -83,18 +76,14 @@ export default class Home extends React.Component<{
   productAttributes = (): void => {
     let products = this.state.data.data.category.products
     this.setState({ loadAttributes: true })
-    products = products.map((product: {attributes: {name: string, items: {displayValue: string}[]}[]}) => {
-      if (product.attributes.length > 0)
-        return product.attributes.map((item) => 0)
-      else
-        return []})
+    products = productsAttributes(products)
     this.setState({ attributes: products})
   };
 
   changeClass = (): void => {
-    const qwe = document.querySelector('.text-active');
-    if (qwe === null) return;
-    qwe.className = 'navbar-link-block'
+    const classChange = document.querySelector('.text-active');
+    if (classChange === null) return;
+    classChange.className = 'navbar-link-block'
   }
 
   render() {
