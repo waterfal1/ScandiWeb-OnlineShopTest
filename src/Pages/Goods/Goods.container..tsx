@@ -6,7 +6,7 @@ import { setCurrency } from '../../store/Currency/actions';
 import { setGoods } from '../../store/ChoseGoods/actions';
 
 class GoodsContainer extends React.Component<{
-  setCurrency: (value: string) => { type: string, payload: string }, stateCurrency: string, stateSelectedItem: number,
+  setCurrency: (value: number) => { type: string, payload: number }, stateCurrency: number, stateSelectedItem: number,
   setGoods: (value: number) => { type: string, payload: number } }> {
   render() {
     return <Good setCurrency={this.props.setCurrency} stateCurrency={this.props.stateCurrency}
@@ -15,8 +15,7 @@ class GoodsContainer extends React.Component<{
 }
 
 const mapStateToProps = (state: {
-  currency: { value: string; }; categoryChanging: { value: string; };
-  counter: { value: number; }; selectedItem: { value: number; }; cartGoods: { value: number[]; }; }) => {
+  currency: { value: number; }; categoryChanging: { value: string; }; selectedItem: { value: number; }; }) => {
   return {
     stateCurrency: state.currency.value,
     stateSelectedItem: state.selectedItem.value

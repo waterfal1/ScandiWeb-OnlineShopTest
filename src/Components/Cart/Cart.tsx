@@ -9,12 +9,12 @@ import Images from './Images';
 
 export default class GoodsInCart extends React.Component<{ data: { products: { id: string, name: string, prices: {
   amount: string, currency: string }[], gallery: string[], attributes: { id: string, name: string,
-  items: { displayValue: string }[]; }[]; }[] }, stateCurrency: string, stateSelectedItem: number,
+  items: { value: string, displayValue: string }[]; }[]; }[] }, stateCurrency: number, stateSelectedItem: number,
   setGoods: (value: number) => { type: string, payload: number } }, { setAmount: boolean, imagesState: number[]  }> {
 
   constructor(props: {
     data: { products: { id: string; name: string; prices: { amount: string; currency: string; }[]; gallery: string[];
-    attributes: { id: string, name: string, items: { displayValue: string; }[]; }[]; }[]; }; stateCurrency: string;
+    attributes: { id: string, name: string, items: { value: string, displayValue: string; }[]; }[]; }[]; }; stateCurrency: number;
     stateSelectedItem: number; setGoods: (value: number) => { type: string; payload: number; }; } ) {
     super(props)
     this.state = { setAmount: false, imagesState: [] }

@@ -1,20 +1,20 @@
 import React from 'react';
 import './Home.styles.scss';
-import {ApolloQueryResult} from '@apollo/client';
+import { ApolloQueryResult } from '@apollo/client';
 import InStock from '../../Components/Stock/InStock';
 import NotInStock from '../../Components/Stock/NotInStock';
 import { query } from './getData'
-import {addGoodsToStorage, productsAttributes} from "../../Components/functions";
+import { addGoodsToStorage, productsAttributes } from '../../Components/functions';
 
 export default class Home extends React.Component<{
-  setCurrency: (value: string) => { type: string, payload: string }, stateSelectedItem: number,
-  setGoods: (value: number) => { type: string, payload: number }, stateCurrency: string, categoryThings: string,
+  setCurrency: (value: number) => { type: string, payload: number }, stateSelectedItem: number,
+  setGoods: (value: number) => { type: string, payload: number }, stateCurrency: number, categoryThings: string,
   setNewCategory: (value: string) => { type: string, payload: string }}, { loading: boolean, counter: number,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: ApolloQueryResult<any>, loadAttributes: boolean, attributes: [number[]] }> {
   private currentCategory: string;
-  constructor(props: { setCurrency: (value: string) => { type: string; payload: string; }; stateSelectedItem: number;
-  setGoods: (value: number) => { type: string; payload: number; }; stateCurrency: string; categoryThings: string;
+  constructor(props: { setCurrency: (value: number) => { type: string; payload: number; }; stateSelectedItem: number;
+  setGoods: (value: number) => { type: string; payload: number; }; stateCurrency: number; categoryThings: string;
   setNewCategory: (value: string) => { type: string; payload: string; }; }) {
     super(props)
     this.state = {data: {data: {}, loading: false, networkStatus: 0}, loading: false, counter: 0, loadAttributes: false,
@@ -34,26 +34,27 @@ export default class Home extends React.Component<{
 
   fetchData = (): void => {
     query(`
-      query { category${this.currentCategory} {
-        name
-        products {
-        id
-        name
-        inStock
-        gallery
-        category
-        attributes {
-        id
-        name
-        items {
-        displayValue
-        }
-        }
-        prices {
-        currency
-        amount
-        }
-      }
+      query { 
+        category${this.currentCategory} {
+          name
+          products {
+            id
+            name
+            inStock
+            gallery
+            category
+            attributes {
+              id
+              name
+              items {
+                displayValue
+              }
+            }
+            prices {
+              currency
+              amount
+            }
+          }
       }
       }
     `)

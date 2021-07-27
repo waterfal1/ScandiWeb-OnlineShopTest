@@ -9,15 +9,15 @@ import { query } from '../../Pages/Home/getData';
 import { ApolloQueryResult } from '@apollo/client';
 import { goodsCollection } from "../functions";
 
-export default class Header extends React.Component<{stateCurrency: string,
-  setCurrency: (value: string) => {type: string, payload: string}, categoryThings: string,
+export default class Header extends React.Component<{stateCurrency: number,
+  setCurrency: (value: number) => {type: string, payload: number}, categoryThings: string,
   setNewCategory:  (value: string) => {type: string, payload: string}, stateSelectedItem: number,
   setGoods: (value: number) => {type: string, payload: number} }, {cartBar: boolean, activeCategoryId: number,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   currentCurrency: string, cartWindowClose: boolean, loading: boolean, data: ApolloQueryResult<any> }> {
   private wrapperRef: React.RefObject<HTMLDivElement>;
 
-  constructor(props: { stateCurrency: string; setCurrency: (value: string) => { type: string; payload: string; };
+  constructor(props: { stateCurrency: number; setCurrency: (value: number) => { type: string; payload: number; };
   categoryThings: string; setNewCategory: (value: string) => { type: string; payload: string; };
   stateSelectedItem: number; setGoods: (value: number) => { type: string; payload: number; }; }) {
     super(props)
@@ -93,7 +93,7 @@ export default class Header extends React.Component<{stateCurrency: string,
   }
 
   handleCurrency = (index: string): void => {
-    this.props.setCurrency(index)
+    this.props.setCurrency(parseInt(index, 10))
     const currency = document.getElementById(index)
     if (currency === null) {return; }
     this.setState({ cartBar: false, currentCurrency: currency.innerHTML })

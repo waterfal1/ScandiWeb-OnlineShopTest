@@ -7,8 +7,8 @@ import { setCurrency } from '../../store/Currency/actions';
 import { setGoods } from '../../store/ChoseGoods/actions';
 
 class HomeContainer extends React.Component<{
-  setCurrency: (value: string) => { type: string, payload: string },
-  stateCurrency: string, categoryThings: string, setNewCategory: (value: string) => { type: string, payload: string },
+  setCurrency: (value: number) => { type: string, payload: number },
+  stateCurrency: number, categoryThings: string, setNewCategory: (value: string) => { type: string, payload: string },
   stateSelectedItem: number, setGoods: (value: number) => { type: string, payload: number } }> {
   render() {
     return <Home setCurrency={this.props.setCurrency} stateCurrency={this.props.stateCurrency}
@@ -18,8 +18,7 @@ class HomeContainer extends React.Component<{
 }
 
 const mapStateToProps = (state: {
-  currency: { value: string; }; categoryChanging: { value: string; };
-  counter: { value: number; }; selectedItem: { value: number; }; }) => {
+  currency: { value: number; }; categoryChanging: { value: string; }; selectedItem: { value: number; }; }) => {
   return {
     stateCurrency: state.currency.value,
     categoryThings: state.categoryChanging.value,

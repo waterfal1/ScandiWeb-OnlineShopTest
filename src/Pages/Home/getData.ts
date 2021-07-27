@@ -1,4 +1,4 @@
-import {ApolloClient, gql, InMemoryCache} from "@apollo/client";
+import { ApolloClient, gql, InMemoryCache } from '@apollo/client';
 
 
 export async function query(strQuery: string) {

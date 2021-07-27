@@ -8,7 +8,7 @@ import AttributesRows from '../../Components/Goods/AtrributesRows';
 import {addGoodsToStorage, productsAttributes} from "../../Components/functions";
 
 export default class Goods extends React.Component<{
-  stateCurrency: string, setCurrency: (value: string) => { type: string, payload: string }, stateSelectedItem: number,
+  stateCurrency: number, setCurrency: (value: number) => { type: string, payload: number }, stateSelectedItem: number,
   setGoods: (value: number) => { type: string, payload: number }
 }, {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -17,7 +17,7 @@ export default class Goods extends React.Component<{
   loadAttributes: boolean
 }> {
   constructor(props: {
-    stateCurrency: string; setCurrency: (value: string) => { type: string; payload: string; };
+    stateCurrency: number; setCurrency: (value: number) => { type: string; payload: number; };
     stateSelectedItem: number; setGoods: (value: number) => { type: string; payload: number; }; }) {
     super(props)
     this.state = { data: {data: {}, loading: false, networkStatus: 0}, loading: false, imageState: 0,
@@ -27,26 +27,27 @@ export default class Goods extends React.Component<{
 
   componentDidMount(): void {
     query(`
-      query { category {
-        products {
-        id
-        name
-        inStock
-        gallery
-        description
-        attributes {
-        id
-        name
-        items {
-        displayValue
+      query { 
+        category {
+          products {
+            id
+            name
+            inStock
+            gallery
+            description
+            attributes {
+              id
+              name
+              items {
+                displayValue
+              }
+            }
+          prices {
+            currency
+            amount
+            }
+          }
         }
-        }
-        prices {
-        currency
-        amount
-        }
-      }
-      }
       }
     `)
       .then(result => {

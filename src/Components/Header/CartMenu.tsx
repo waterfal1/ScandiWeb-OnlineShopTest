@@ -6,13 +6,13 @@ import { ApolloQueryResult } from '@apollo/client';
 import * as _ from 'lodash';
 import GoodsAttributes from './GoodsAttributes';
 
-export default class CartMenu extends React.Component<{stateCurrency: string,
-  setCurrency: (value: string) => {type: string, payload: string}, toggleCartWindow: () => void,
+export default class CartMenu extends React.Component<{stateCurrency: number,
+  setCurrency: (value: number) => {type: string, payload: number}, toggleCartWindow: () => void,
   stateSelectedItem: number, setGoods: (value: number) => {type: string, payload: number} },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   { data:  ApolloQueryResult<any>, loading: boolean, amounts: number[], attribute: number, windowState: boolean }> {
 
-  constructor(props: { stateCurrency: string; setCurrency: (value: string) => { type: string; payload: string; };
+  constructor(props: { stateCurrency: number; setCurrency: (value: number) => { type: string; payload: number; };
   toggleCartWindow: () => void; stateSelectedItem: number;
   setGoods: (value: number) => { type: string; payload: number; }}) {
     super(props)
@@ -22,24 +22,26 @@ export default class CartMenu extends React.Component<{stateCurrency: string,
 
   componentDidMount(): void {
     query(`
-      query { category {
-        name
-        products {
-        id
-        name
-        gallery
-        attributes {
-        name
-        items {
-        displayValue
+      query { 
+        category {
+          name
+          products {
+            id
+            name
+            gallery
+            attributes {
+              name
+              items {
+                displayValue
+                value
+              }
+            }
+            prices {
+              currency
+              amount
+            }
+          }
         }
-        }
-        prices {
-        currency
-        amount
-        }
-      }
-      }
       }
     `)
       .then(result => {
@@ -90,14 +92,20 @@ export default class CartMenu extends React.Component<{stateCurrency: string,
     const productsIndexes = searchIndexes(goodsAmount, products);
     return (
       <div className='cart-window'>
-        <p className='cart-window-bag'> <strong>My Bag,</strong> {goodsAmount.length} items</p>
+        <p className='cart-window-bag'>
+          <strong>
+            My Bag,
+          </strong>
+          {goodsAmount.length} items
+        </p>
         <GoodsAttributes attributeSelected={this.attributeSelected} goodsAmount={goodsAmount}
                          setAmountUp={this.setAmountUp} setAmountDown={this.setAmountDown}
                          stateCurrency={stateCurrency} productsIndexes={productsIndexes} products={products} />
         <div className='cart-window-total-cost'>
           <p>Total</p>
           <p>
-            {sessionStorage.getItem('Currency') ? sessionStorage.getItem('Currency') : <>&#36;</>}{totalCost}
+            {sessionStorage.getItem('Currency') ? sessionStorage.getItem('Currency') : <>&#36;</>}
+            {totalCost}
           </p>
         </div>
         <div className='cart-window-buttons'>
