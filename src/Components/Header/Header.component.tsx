@@ -2,12 +2,10 @@ import React from 'react';
 import './Header.style.scss';
 import { NavLink } from 'react-router-dom';
 import logo from '../../assets/a-logo.svg';
-import cart from '../../assets/cart.svg';
-import HeaderCurrencies from './Currencies';
-import CartMenu from './CartMenu';
 import { query } from '../../Pages/Home/getData';
 import { ApolloQueryResult } from '@apollo/client';
 import { goodsCollection } from "../functions";
+import CurrenciesAndCart from "./CurrenciesAndCart";
 
 export default class Header extends React.Component<{stateCurrency: number,
   setCurrency: (value: number) => {type: string, payload: number}, categoryThings: string,
@@ -120,35 +118,26 @@ export default class Header extends React.Component<{stateCurrency: number,
   }
 
   render(): React.ReactNode {
-    if (!this.state.loading)
-      return '....Loading'
+    if (!this.state.loading) return '....Loading'
     const { cartWindowClose, currentCurrency, cartBar } = this.state;
     const currencies = this.state.data.data.category.products[0].prices;
     const goodsFromStorage = JSON.parse(sessionStorage.getItem('Goods') as string);
     const goodsAmount = goodsCollection(goodsFromStorage);
     return (
       <>
-        {cartWindowClose ? <div onClick={this.toggleCartWindow} className='dark-side' /> : <></>}
+        {cartWindowClose ? <div onClick={this.toggleCartWindow} className='dark-side' /> : null}
         <nav className='header_bar'>
           <ul className='nav-list'>{this.navbarLinks()}</ul>
           <NavLink to='/'>
             <img onClick={this.backButton} src={logo} alt='Back Button' />
           </NavLink>
           <div ref={this.wrapperRef} className='currency-icons'>
-            <div  className='column-container'>
-              <div  className='currency-container' onClick={this.changeCurrency}>
-                {sessionStorage.getItem('Currency') ? sessionStorage.getItem('Currency') : currentCurrency}
-                <div className='arrow-down' />
-              </div>
-              {cartBar ? <HeaderCurrencies currencies={currencies} handleCurrency={this.handleCurrency} /> : <></>}
-            </div>
-            <img onClick={this.setCartBar} className='a-number-of' src={cart} alt='Cart' />
-              {goodsAmount.length > 0 ? <div className='number'>{goodsAmount.length}</div>: <></>}
-              {cartWindowClose
-              ? <CartMenu toggleCartWindow={this.toggleCartWindow} stateCurrency={this.props.stateCurrency}
-                          setCurrency={this.props.setCurrency} stateSelectedItem={this.props.stateSelectedItem}
-                          setGoods={this.props.setGoods} />
-              : <></>}
+            <CurrenciesAndCart changeCurrency={this.changeCurrency}  cartWindowClose={cartWindowClose}
+                               currencies={currencies} currentCurrency={currentCurrency}   goodsAmount={goodsAmount}
+                               stateCurrency={this.props.stateCurrency} handleCurrency={this.handleCurrency}
+                               setCartBar={this.setCartBar} setCurrency={this.props.setCurrency}
+                               setGoods={this.props.setGoods} stateSelectedItem={this.props.stateSelectedItem}
+                               toggleCartWindow={this.toggleCartWindow} cartBar={cartBar} />
           </div>
         </nav>
       </>

@@ -1,5 +1,6 @@
 import * as _ from "lodash";
 
+//counting a number of goods in storage
 function goodsCollection(goodsIndexes: number[]): (string | number[][] | number)[][] {
   return _.toPairs(
     _.countBy(goodsIndexes))
@@ -13,6 +14,7 @@ function goodsCollection(goodsIndexes: number[]): (string | number[][] | number)
     .sort((a, b) => a[0] - b[0]);
 }
 
+//find goods indexes in database
 function searchIndexes(goodsAmount: (string | number[][] | number)[][], products: { id: string; name: string;
 gallery: string[]; prices: { amount: string; currency: string }[] }[]): number[] {
   return _.flatten(goodsAmount.map((item) => {
@@ -25,7 +27,7 @@ gallery: string[]; prices: { amount: string; currency: string }[] }[]): number[]
   }))
 }
 
-function goodsFromStorage(productIndexes: (string | number[][] | number)[]) {
+function removeGoods(productIndexes: (string | number[][] | number)[]) {
   const goodsFromStorage = JSON.parse(sessionStorage.getItem('Goods') as string);
   const res = goodsFromStorage.map((element: number[][], index: number) => {
     // @ts-ignore
@@ -36,6 +38,7 @@ function goodsFromStorage(productIndexes: (string | number[][] | number)[]) {
   return goodsFromStorage
 }
 
+// if we add goods from main page we add with default attributes
 function productsAttributes(products: { attributes: { name: string; items: { displayValue: string; }[]; }[]; }[]) {
   return products.map((product: {attributes: {name: string, items: {displayValue: string}[]}[]}) => {
     if (product.attributes.length > 0)
@@ -56,5 +59,11 @@ function addGoodsToStorage(id: string, attributes: number[]) {
   }
 }
 
-// @ts-ignore
-export { goodsCollection, searchIndexes, goodsFromStorage, productsAttributes, addGoodsToStorage }
+function amountUpHelper(productIndexes: (string | number[][] | number)[]): void {
+  const goodsFromStorage = JSON.parse(sessionStorage.getItem('Goods') as string);
+  // @ts-ignore
+  goodsFromStorage.push([productIndexes[0], _.flatten(productIndexes[1])]);
+  sessionStorage.setItem('Goods', JSON.stringify(goodsFromStorage));
+}
+
+export { goodsCollection, searchIndexes, removeGoods, productsAttributes, addGoodsToStorage, amountUpHelper }

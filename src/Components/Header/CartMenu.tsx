@@ -1,10 +1,12 @@
 import React from 'react';
 import { query } from '../../Pages/Home/getData';
-import { NavLink } from 'react-router-dom';
-import { goodsCollection, goodsFromStorage, searchIndexes } from '../functions';
+import {amountUpHelper, goodsCollection, removeGoods, searchIndexes} from '../functions';
 import { ApolloQueryResult } from '@apollo/client';
 import * as _ from 'lodash';
 import GoodsAttributes from './GoodsAttributes';
+import CartWindowBag from "./CartWindowBag";
+import TotalCost from "./TotalCost";
+import Buttons from "./Buttons";
 
 export default class CartMenu extends React.Component<{stateCurrency: number,
   setCurrency: (value: number) => {type: string, payload: number}, toggleCartWindow: () => void,
@@ -51,15 +53,12 @@ export default class CartMenu extends React.Component<{stateCurrency: number,
   }
 
   setAmountUp = (productIndexes: (string | number[][] | number)[]): void => {
-    const goodsFromStorage = JSON.parse(sessionStorage.getItem('Goods') as string);
-    // @ts-ignore
-    goodsFromStorage.push([productIndexes[0], _.flatten(productIndexes[1])]);
-    sessionStorage.setItem('Goods', JSON.stringify(goodsFromStorage));
+    amountUpHelper(productIndexes)
     this.props.setGoods(this.props.stateSelectedItem + 1);
   }
 
   setAmountDown = (productIndexes: (string | number[][] | number)[]): void | undefined => {
-    const goods = goodsFromStorage(productIndexes);
+    const goods = removeGoods(productIndexes);
     sessionStorage.removeItem('Goods');
     sessionStorage.setItem('Goods', JSON.stringify(goods));
     this.props.setGoods(this.props.stateSelectedItem + 1);
@@ -69,6 +68,7 @@ export default class CartMenu extends React.Component<{stateCurrency: number,
     this.setState({ attribute: index });
   }
 
+  // finding indexes of goods in order to find goods cost and after that cost counting
   totalCost = (goods: (string | number[][] | number)[][]): string => {
     const products = this.state.data.data.category.products;
     const result = _.flatten(goods.map((item) => {
@@ -94,28 +94,12 @@ export default class CartMenu extends React.Component<{stateCurrency: number,
     const productsIndexes = searchIndexes(goodsAmount, products);
     return (
       <div className='cart-window'>
-        <p className='cart-window-bag'>
-          <strong>
-            My Bag,
-          </strong>
-          {goodsAmount.length} items
-        </p>
+        <CartWindowBag amount={goodsAmount.length} />
         <GoodsAttributes attributeSelected={this.attributeSelected} goodsAmount={goodsAmount}
                          setAmountUp={this.setAmountUp} setAmountDown={this.setAmountDown}
                          stateCurrency={stateCurrency} productsIndexes={productsIndexes} products={products} />
-        <div className='cart-window-total-cost'>
-          <p>Total</p>
-          <p>
-            {sessionStorage.getItem('Currency') ? sessionStorage.getItem('Currency') : <>&#36;</>}
-            {totalCost}
-          </p>
-        </div>
-        <div className='cart-window-buttons'>
-          <NavLink to='/cart'>
-            <button onClick={this.props.toggleCartWindow} className='cart-window-view-btn'> VIEW BAG</button>
-          </NavLink>
-          <button className='cart-window-checkout-btn'> CHECK OUT</button>
-        </div>
+        <TotalCost totalCost={totalCost} />
+        <Buttons toggleCartWindow={this.props.toggleCartWindow} />
       </div>
     )
   }

@@ -96,9 +96,15 @@ export default class Goods extends React.Component<{
       }).filter((value) => value || value === 0)[0]
   }
 
+  renderButton = (products: {id: string, inStock: string}[], productIndex: number, attributes: [number[]]) => {
+    if (products[productIndex].inStock)
+      return <button onClick={() => this.addToCart(products[productIndex].id, attributes[productIndex])}
+                     className='add-to-cart-btn pointer'>ADD TO CART</button>
+    return <p>Out of Stock</p>
+  }
+
   render() {
-    if (!this.state.loading)
-      return '....Loading';
+    if (!this.state.loading) return '....Loading';
     if (!this.state.loadAttributes) {
       this.productAttributes()
     }
@@ -128,11 +134,8 @@ export default class Goods extends React.Component<{
             {sessionStorage.getItem('Currency') ? sessionStorage.getItem('Currency') : <>&#36;</>}
             {products[productIndex].prices[this.props.stateCurrency].amount}
           </p>
-          {products[productIndex].inStock
-            ? <button onClick={() => this.addToCart(products[productIndex].id, attributes[productIndex])}
-                      className='add-to-cart-btn pointer'>ADD TO CART</button>
-            : <p>Out of Stock</p>
-          }
+
+          {this.renderButton(products, productIndex, attributes)}
           <Description description={products[productIndex].description} />
         </div>
       </div>

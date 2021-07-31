@@ -87,35 +87,36 @@ export default class Home extends React.Component<{
     classChange.className = 'navbar-link-block'
   }
 
+  blocksRendering = () => {
+    const blocksOnPage = Array.from(Array(this.state.data.data.category.products.length).keys());
+    const products = this.state.data.data.category.products;
+    return blocksOnPage.map((item: number) => {
+      if (products[item].inStock && this.state.loadAttributes)
+        return <InStock choseGoods={this.choseGoods} item={item} products={products} attributes={this.state.attributes}
+                        stateCurrency={this.props.stateCurrency} counter={this.increment} />
+      else
+        return <NotInStock item={item} products={products} stateCurrency={this.props.stateCurrency}
+                           choseGoods={this.choseGoods} />
+    })
+
+  }
+
   render() {
-    if (!this.props.categoryThings) {
-      this.changeClass()
-    }
+    if (!this.props.categoryThings) {this.changeClass()}
     this.currentCategory = `(input: {title: "${this.props.categoryThings}"})`;
     if (!this.state.loading) return '....Loading';
-    if (!this.state.loadAttributes) {
-      this.productAttributes()
-    }
+    if (!this.state.loadAttributes) {this.productAttributes()}
     let {name} = this.state.data.data.category;
     name = name[0].toUpperCase() + name.substring(1)
-    const blocksOnPage = Array.from(Array(this.state.data.data.category.products.length).keys());
     if (this.props.categoryThings) {
       name = this.props.categoryThings;
       name = name[0].toUpperCase() + name.substring(1)
     }
-    const products = this.state.data.data.category.products;
     return (
       <main>
         <div className='category-name'>{name}</div>
         <div className='category-block-on-page'>
-          {blocksOnPage.map((item: number) => {
-            return (products[item].inStock && this.state.loadAttributes ?
-              <InStock choseGoods={this.choseGoods} item={item} products={products} attributes={this.state.attributes}
-                       stateCurrency={this.props.stateCurrency} counter={this.increment}/> :
-              <NotInStock item={item} products={products}
-                          stateCurrency={this.props.stateCurrency} choseGoods={this.choseGoods}/>)
-          })
-          }
+          {this.blocksRendering()}
         </div>
       </main>
     );

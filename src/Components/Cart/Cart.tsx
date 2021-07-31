@@ -1,7 +1,7 @@
 import React from 'react';
 import * as _ from 'lodash';
 import '../../Pages/Goods/Goods.styles.scss';
-import { goodsCollection, goodsFromStorage, searchIndexes } from '../functions';
+import {amountUpHelper, goodsCollection, removeGoods, searchIndexes} from '../functions';
 import GoodsName from './GoodsName';
 import AttributesContainer from './AttributesContainer';
 import Buttons from './Buttons';
@@ -44,16 +44,13 @@ export default class GoodsInCart extends React.Component<{ data: { products: { i
 
   // adding goods to storage
   setAmountUp = (productIndexes: (string | number[][] | number)[]): void => {
-    const goodsFromStorage = JSON.parse(sessionStorage.getItem('Goods') as string);
-    // @ts-ignore
-    goodsFromStorage.push([productIndexes[0], _.flatten(productIndexes[1])]);
-    sessionStorage.setItem('Goods', JSON.stringify(goodsFromStorage));
+    amountUpHelper(productIndexes)
     this.props.setGoods(this.props.stateSelectedItem + 1)
   }
 
   // searching goods in storage and remove
   setAmountDown = (productIndexes: (string | number[][] | number)[]): void | undefined => {
-    const goods = goodsFromStorage(productIndexes)
+    const goods = removeGoods(productIndexes)
     sessionStorage.removeItem('Goods');
     sessionStorage.setItem('Goods', JSON.stringify(goods));
     this.props.setGoods(this.props.stateSelectedItem + 1)
@@ -85,6 +82,25 @@ export default class GoodsInCart extends React.Component<{ data: { products: { i
     localStorage.setItem('goodsSelected', goodsId);
   }
 
+  productRender = (productsIndexes: number[], products: { id: string, name: string, prices: {
+      amount: string, currency: string }[], gallery: string[], attributes: { id: string, name: string,
+      items: { value: string, displayValue: string }[]; }[]; }[], goodsAmount: (string | number[][] | number)[][]) => {
+    return productsIndexes.map((productIndex: number, goodsCounter: number) => (
+      <div key={goodsCounter} className='cart-common-container'>
+        <div className='cart-goods-container'>
+          <GoodsName stateCurrency={this.props.stateCurrency} product={products[productIndex]}
+                     choseGoods={() => this.choseGoods(products[productIndex].id)} />
+          <AttributesContainer goodsAmount={goodsAmount} goodsCounter={goodsCounter}
+                               product={products[productIndex]} attributeSelected={this.attributeSelected} />
+        </div>
+        <Buttons setAmountDown={this.setAmountDown} setAmountUp={this.setAmountUp}
+                 goodsAmount={goodsAmount} goodsCounter={goodsCounter} />
+        <Images imagesState={this.state.imagesState} imageDown={this.imageDown}
+                imageUp={this.imageUp} product={products[productIndex]} goodsCounter={goodsCounter} />
+      </div>
+    ))
+  }
+
   render() {
     const goodsFromStorage = JSON.parse(sessionStorage.getItem('Goods') as string);
     const goodsAmount = goodsCollection(goodsFromStorage);
@@ -95,24 +111,6 @@ export default class GoodsInCart extends React.Component<{ data: { products: { i
     }
     const products = this.props.data.products;
     const productsIndexes = searchIndexes(goodsAmount, products);
-    return (
-      <>
-        {/*// @ts-ignore*/}
-        {productsIndexes.map((productIndex: number, num: number) => (
-        <div key={num} className='cart-common-container'>
-          <div className='cart-goods-container'>
-            <GoodsName stateCurrency={this.props.stateCurrency} product={products[productIndex]}
-                       choseGoods={() => this.choseGoods(products[productIndex].id)} />
-            <AttributesContainer goodsAmount={goodsAmount} num={num} product={products[productIndex]}
-                                 attributeSelected={this.attributeSelected} />
-          </div>
-          <Buttons setAmountDown={this.setAmountDown} setAmountUp={this.setAmountUp}
-                   goodsAmount={goodsAmount} num={num} />
-          <Images imagesState={this.state.imagesState} imageDown={this.imageDown}
-                  imageUp={this.imageUp} product={products[productIndex]} num={num} />
-        </div>
-        ))}
-      </>
-    )
+    return <>{this.productRender(productsIndexes, products, goodsAmount)}</>
   }
 }

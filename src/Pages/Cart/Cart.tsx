@@ -47,19 +47,22 @@ export default class Cart extends React.Component<{
       })
   }
 
+  renderGoodsInCart = (length: number) => {
+    if (length === 0)
+      return <div className='cart-name'>You cart is empty</div>
+    else
+      return <GoodsInCart stateCurrency={this.props.stateCurrency} stateSelectedItem={this.props.stateSelectedItem}
+                          setGoods={this.props.setGoods} data={this.state.data.data.category} />
+  }
+
   render() {
-    if (!this.state.loading)
-      return '....Loading';
+    if (!this.state.loading) return '....Loading';
     const goodsFromStorage = JSON.parse(sessionStorage.getItem('Goods') as string);
     const goodsAmount = goodsCollection(goodsFromStorage);
-    console.log(this.props.stateSelectedItem);
     return (
       <section>
         <div className='cart-name'>Cart</div>
-        <div> {goodsAmount.length === 0 ? <div className='cart-name'>You cart is empty</div> :
-          <GoodsInCart stateCurrency={this.props.stateCurrency} stateSelectedItem={this.props.stateSelectedItem}
-                       setGoods={this.props.setGoods} data={this.state.data.data.category}/>}
-        </div>
+        <div>{this.renderGoodsInCart(goodsAmount.length)}</div>
       </section>
     );
   }
