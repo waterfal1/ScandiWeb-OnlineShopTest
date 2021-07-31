@@ -1,16 +1,17 @@
 import React from 'react';
 import { query } from '../../Pages/Home/getData';
 import { NavLink } from 'react-router-dom';
-import {goodsCollection, goodsFromStorage, searchIndexes} from '../functions';
+import { goodsCollection, goodsFromStorage, searchIndexes } from '../functions';
 import { ApolloQueryResult } from '@apollo/client';
 import * as _ from 'lodash';
 import GoodsAttributes from './GoodsAttributes';
 
 export default class CartMenu extends React.Component<{stateCurrency: number,
   setCurrency: (value: number) => {type: string, payload: number}, toggleCartWindow: () => void,
-  stateSelectedItem: number, setGoods: (value: number) => {type: string, payload: number} },
+  stateSelectedItem: number, setGoods: (value: number) => {type: string, payload: number},
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  { data:  ApolloQueryResult<any>, loading: boolean, amounts: number[], attribute: number, windowState: boolean }> {
+ }, { data:  ApolloQueryResult<any>, loading: boolean, amounts: number[],
+  attribute: number, windowState: boolean }> {
 
   constructor(props: { stateCurrency: number; setCurrency: (value: number) => { type: string; payload: number; };
   toggleCartWindow: () => void; stateSelectedItem: number;
@@ -49,30 +50,31 @@ export default class CartMenu extends React.Component<{stateCurrency: number,
       })
   }
 
-  setAmountUp = (productIndexes: (string | number | string[][])[]): void => {
+  setAmountUp = (productIndexes: (string | number[][] | number)[]): void => {
     const goodsFromStorage = JSON.parse(sessionStorage.getItem('Goods') as string);
-    goodsFromStorage.push([productIndexes[0], [parseInt(productIndexes[1] as string,10)]]);
+    // @ts-ignore
+    goodsFromStorage.push([productIndexes[0], _.flatten(productIndexes[1])]);
     sessionStorage.setItem('Goods', JSON.stringify(goodsFromStorage));
-    this.props.setGoods(this.props.stateSelectedItem + 1)
+    this.props.setGoods(this.props.stateSelectedItem + 1);
   }
 
-  setAmountDown = (productIndexes: (string | number | string[][])[] | number[][]): void | undefined => {
-    const goods = goodsFromStorage(productIndexes)
+  setAmountDown = (productIndexes: (string | number[][] | number)[]): void | undefined => {
+    const goods = goodsFromStorage(productIndexes);
     sessionStorage.removeItem('Goods');
     sessionStorage.setItem('Goods', JSON.stringify(goods));
-    this.props.setGoods(this.props.stateSelectedItem + 1)
+    this.props.setGoods(this.props.stateSelectedItem + 1);
   }
 
   attributeSelected = (index: number): void => {
     this.setState({ attribute: index });
   }
 
-  totalCost = (goods: ((string | (string[])[] | number)[])[]): string => {
+  totalCost = (goods: (string | number[][] | number)[][]): string => {
     const products = this.state.data.data.category.products;
     const result = _.flatten(goods.map((item) => {
      return products.map((el: {id: string, name: string, gallery: string[],
        prices: {amount: string, currency: string}[]}, index: number) => {
-      if (item[0] === el.id)
+       if (item[0] === el.id)
         return index
     }).filter((value: number) => value || value === 0)
   }))

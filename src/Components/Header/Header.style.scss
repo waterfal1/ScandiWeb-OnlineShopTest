@@ -198,6 +198,8 @@ a {
 
 .cart-window {
   position: absolute;
+  max-height: 100vh;
+  overflow-y: scroll;
   right: 80px;
   top: 80px;
   background-color: white;

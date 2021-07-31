@@ -91,9 +91,7 @@ export default class Home extends React.Component<{
     if (!this.props.categoryThings) {
       this.changeClass()
     }
-    else {
-      this.currentCategory = `(input: {title: "${this.props.categoryThings}"})`;
-    }
+    this.currentCategory = `(input: {title: "${this.props.categoryThings}"})`;
     if (!this.state.loading) return '....Loading';
     if (!this.state.loadAttributes) {
       this.productAttributes()

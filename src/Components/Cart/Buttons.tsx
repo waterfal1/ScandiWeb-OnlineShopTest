@@ -1,9 +1,10 @@
 import React from 'react';
 import '../../Pages/Goods/Goods.styles.scss';
 
-export default class Buttons extends React.Component<{setAmountDown: (input: (string | number | string[][])[] |
-    number[][]) => void | undefined,setAmountUp: (input: (string | number | string[][])[] | number[][]) => void,
-  goodsAmount: (string | number | string[][])[][], num: number }> {
+export default class Buttons extends React.Component<{
+  setAmountDown: (input: (string | number[][] | number)[]) => void | undefined,
+  setAmountUp: (input: (string | number[][] | number)[]) => void,
+  goodsAmount: (string | number[][] | number)[][], num: number }> {
   render() {
     const { num, goodsAmount, setAmountUp, setAmountDown } = this.props;
     return (

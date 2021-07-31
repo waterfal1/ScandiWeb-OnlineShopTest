@@ -1,7 +1,7 @@
 import React from 'react';
 import * as _ from 'lodash';
 import '../../Pages/Goods/Goods.styles.scss';
-import {goodsCollection, goodsFromStorage, searchIndexes} from '../functions';
+import { goodsCollection, goodsFromStorage, searchIndexes } from '../functions';
 import GoodsName from './GoodsName';
 import AttributesContainer from './AttributesContainer';
 import Buttons from './Buttons';
@@ -14,8 +14,9 @@ export default class GoodsInCart extends React.Component<{ data: { products: { i
 
   constructor(props: {
     data: { products: { id: string; name: string; prices: { amount: string; currency: string; }[]; gallery: string[];
-    attributes: { id: string, name: string, items: { value: string, displayValue: string; }[]; }[]; }[]; }; stateCurrency: number;
-    stateSelectedItem: number; setGoods: (value: number) => { type: string; payload: number; }; } ) {
+    attributes: { id: string, name: string, items: { value: string, displayValue: string; }[]; }[]; }[]; };
+    stateCurrency: number; stateSelectedItem: number;
+    setGoods: (value: number) => { type: string; payload: number; }; } ) {
     super(props)
     this.state = { setAmount: false, imagesState: [] }
   }
@@ -42,16 +43,16 @@ export default class GoodsInCart extends React.Component<{ data: { products: { i
   }
 
   // adding goods to storage
-  setAmountUp = (productIndexes: (string | number | string[][])[] | number[][]): void => {
+  setAmountUp = (productIndexes: (string | number[][] | number)[]): void => {
     const goodsFromStorage = JSON.parse(sessionStorage.getItem('Goods') as string);
     // @ts-ignore
-    goodsFromStorage.push([productIndexes[0], [productIndexes[1][0]]]);
+    goodsFromStorage.push([productIndexes[0], _.flatten(productIndexes[1])]);
     sessionStorage.setItem('Goods', JSON.stringify(goodsFromStorage));
     this.props.setGoods(this.props.stateSelectedItem + 1)
   }
 
   // searching goods in storage and remove
-  setAmountDown = (productIndexes: (string | number | string[][])[] | number[][]): void | undefined => {
+  setAmountDown = (productIndexes: (string | number[][] | number)[]): void | undefined => {
     const goods = goodsFromStorage(productIndexes)
     sessionStorage.removeItem('Goods');
     sessionStorage.setItem('Goods', JSON.stringify(goods));

@@ -39,6 +39,7 @@ export default class Goods extends React.Component<{
               id
               name
               items {
+                value
                 displayValue
               }
             }

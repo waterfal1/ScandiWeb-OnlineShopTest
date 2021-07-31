@@ -2,9 +2,9 @@ import React from 'react';
 import Attributes from './Attributes';
 
 export default class GoodsAttributes extends React.Component<{attributeSelected: (index: number) => void,
-  setAmountUp: (productIndexes: (string | number | string[][])[]) => void,
-  setAmountDown: (productIndexes: (string | number | string[][])[] | number[][]) => void | undefined,
-  goodsAmount: (string | number | string[][])[][], stateCurrency: number, productsIndexes: number[],
+  setAmountUp: (productIndexes: (string | number[][] | number)[]) => void,
+  setAmountDown: (productIndexes: (string | number[][] | number)[]) => void | undefined,
+  goodsAmount: (string | number[][] | number)[][], stateCurrency: number, productsIndexes: number[],
   products: {id: string, name: string, gallery: string[], prices: {amount: string}[],
     attributes: {id: string, name: string,  items: { value: string, displayValue: string; }[]; }[] }[]}> {
 
@@ -30,7 +30,7 @@ export default class GoodsAttributes extends React.Component<{attributeSelected:
                       {element.name}{element.items
                       // @ts-ignore
                       .map((item: {value: string, displayValue: string}, ind: number) => (goodsAmount[num][1][0][index] == ind
-                        ? <Attributes key={ind} attributeSelected={() => attributeSelected(ind)}
+                        ? <Attributes key={ind} attributeSelected={() => attributeSelected(ind)} value={item.value}
                                     displayValue={item.value} />
                         : <></>
                       ))}

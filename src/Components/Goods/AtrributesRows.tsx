@@ -8,7 +8,7 @@ export default class AttributesRows extends React.Component<{attributes: number[
   attributeSelected: (productIndex: number, attributeIndex: number, index: number) => void,
   attributeNonSelected: (productIndex: number, attributeIndex: number, index: number) => void,
   loadAttributes: boolean, productIndex: number, product: {attributes: {id: string, name: string,
-  items: { displayValue: string; }[];}[]}}> {
+  items: { value: string, displayValue: string; }[];}[]}}> {
   render() {
     const { attributes, product, productIndex, loadAttributes, attributeSelected, attributeNonSelected } = this.props;
     return (
@@ -20,14 +20,16 @@ export default class AttributesRows extends React.Component<{attributes: number[
                 ? <div key={attribute.id} className='attributes-columns'>
                     <AttributeName attributeName={attribute.name} />
                     <div className='goods-attribute-row'>
-                      {attribute.items.map((item: { displayValue: string }, itemIndex: number) => (
-                        attributes[productIndex][attributeIndex] === itemIndex
+                      {attribute.items.map((item: { value: string, displayValue: string }, itemIndex: number) => (
+                        attributes[productIndex][attributeIndex] == itemIndex
                           ? <AttributeSelected productIndex={productIndex} attributeIndex={attributeIndex}
                                                itemIndex={itemIndex} attributeSelected={attributeSelected}
-                                               value={item.displayValue}  />
+                                               displayValue={item.displayValue}
+                                               value={item.value}  />
                           : <AttributeNonSelected productIndex={productIndex} attributeIndex={attributeIndex}
                                                   itemIndex={itemIndex} attributeNonSelected={attributeNonSelected}
-                                                  value={item.displayValue} />
+                                                  displayValue={item.displayValue}
+                                                  value={item.value} />
                       ))}
                     </div>
                   </div>

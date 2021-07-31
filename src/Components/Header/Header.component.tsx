@@ -95,21 +95,22 @@ export default class Header extends React.Component<{stateCurrency: number,
   handleCurrency = (index: string): void => {
     this.props.setCurrency(parseInt(index, 10))
     const currency = document.getElementById(index)
-    if (currency === null) {return; }
+    if (currency === null) { return; }
     this.setState({ cartBar: false, currentCurrency: currency.innerHTML })
     sessionStorage.setItem('Currency', currency.innerHTML);
   }
 
   changeCurrency = (): void => {
-    if (!this.state.cartBar)
-      this.setState({ cartBar: true})
+    if (!this.state.cartBar) {
+      this.setState({cartBar: true, cartWindowClose: false})
+    }
     else
       this.setState({ cartBar: false })
   }
 
   setCartBar = (): void => {
     if (!this.state.cartWindowClose)
-      this.setState({ cartWindowClose: true })
+      this.setState({ cartWindowClose: true, cartBar: false })
     else
       this.setState({ cartWindowClose: false })
   }
@@ -135,14 +136,14 @@ export default class Header extends React.Component<{stateCurrency: number,
           </NavLink>
           <div ref={this.wrapperRef} className='currency-icons'>
             <div  className='column-container'>
-              <div className='currency-container' onClick={this.changeCurrency}>
+              <div  className='currency-container' onClick={this.changeCurrency}>
                 {sessionStorage.getItem('Currency') ? sessionStorage.getItem('Currency') : currentCurrency}
                 <div className='arrow-down' />
               </div>
               {cartBar ? <HeaderCurrencies currencies={currencies} handleCurrency={this.handleCurrency} /> : <></>}
             </div>
             <img onClick={this.setCartBar} className='a-number-of' src={cart} alt='Cart' />
-              {sessionStorage.length > 0 ? <div className='number'>{goodsAmount.length}</div>: <></>}
+              {goodsAmount.length > 0 ? <div className='number'>{goodsAmount.length}</div>: <></>}
               {cartWindowClose
               ? <CartMenu toggleCartWindow={this.toggleCartWindow} stateCurrency={this.props.stateCurrency}
                           setCurrency={this.props.setCurrency} stateSelectedItem={this.props.stateSelectedItem}

@@ -1,16 +1,20 @@
 import * as _ from "lodash";
 
-function goodsCollection(goodsIndexes: string[]): ((string | (string[])[] | number)[])[] {
+function goodsCollection(goodsIndexes: number[]): (string | number[][] | number)[][] {
   return _.toPairs(
     _.countBy(goodsIndexes))
     .map((item: [string, number]) =>
-    [item[0].split(',')[0], [item[0].split(',').slice(1)], item[1]])
+    [item[0]
+      .split(',')[0], [item[0]
+      .split(',')
+      .slice(1)
+      .map((item: string) => parseInt(item))], item[1]])
     // @ts-ignore
     .sort((a, b) => a[0] - b[0]);
 }
 
-function searchIndexes(goodsAmount: (string | number | string[][])[][], products: { id: string; name: string;
-  gallery: string[]; prices: { amount: string; currency: string; }[]; }[]): number[] {
+function searchIndexes(goodsAmount: (string | number[][] | number)[][], products: { id: string; name: string;
+gallery: string[]; prices: { amount: string; currency: string }[] }[]): number[] {
   return _.flatten(goodsAmount.map((item) => {
     return products.map((el: {id: string, name: string, gallery: string[],
       prices: {amount: string, currency: string}[]}, index: number) => {
@@ -21,15 +25,14 @@ function searchIndexes(goodsAmount: (string | number | string[][])[][], products
   }))
 }
 
-function goodsFromStorage(productIndexes: (string | number | string[][])[] | number[][]) {
+function goodsFromStorage(productIndexes: (string | number[][] | number)[]) {
   const goodsFromStorage = JSON.parse(sessionStorage.getItem('Goods') as string);
-  goodsFromStorage.splice(goodsFromStorage.map((element: number[][], index: number) => {
-    if (element[0] === productIndexes[0] && element[1].map((item: number, ind: number) => {// @ts-ignore
-      return item === productIndexes[1][ind]
-    }))
+  const res = goodsFromStorage.map((element: number[][], index: number) => {
+    // @ts-ignore
+    if (element[0] === productIndexes[0] && _.isEqual(element[1], _.flatten(productIndexes[1])))
       return index
-  })
-    .filter((value: number[] | undefined) => value)[0], 1)
+  }).filter((value: number | undefined) => value);
+  goodsFromStorage.splice(res[res.length-1], 1)
   return goodsFromStorage
 }
 
