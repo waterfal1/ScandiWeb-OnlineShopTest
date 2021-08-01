@@ -1,5 +1,5 @@
 import React from 'react';
-
+import CurrentCurrency from '../Cart/CurrentCurrency';
 
 export default class TotalCost extends React.Component<{totalCost: string}> {
   render() {
@@ -7,7 +7,7 @@ export default class TotalCost extends React.Component<{totalCost: string}> {
       <div className='cart-window-total-cost'>
         <p>Total</p>
         <p>
-          {sessionStorage.getItem('Currency') ? sessionStorage.getItem('Currency') : <>&#36;</>}
+          <CurrentCurrency />
           {this.props.totalCost}
         </p>
       </div>

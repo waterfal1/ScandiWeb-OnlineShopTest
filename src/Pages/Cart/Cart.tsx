@@ -5,16 +5,16 @@ import { ApolloQueryResult } from '@apollo/client';
 import GoodsInCart from '../../Components/Cart/Cart';
 import { goodsCollection } from '../../Components/functions';
 
-export default class Cart extends React.Component<{
-  stateCurrency: number, setCurrency: (value: number) => { type: string, payload: number }, stateSelectedItem: number,
-  setGoods: (value: number) => { type: string, payload: number } },
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  { data: ApolloQueryResult<any>, loading: boolean }> {
+interface CartProps {
+  stateCurrency: number
+  setCurrency: (value: number) => { type: string, payload: number }
+  stateSelectedItem: number
+  setGoods: (value: number) => { type: string, payload: number }
+}
 
-  constructor(props: {
-    stateCurrency: number; setCurrency: (value: number) => { type: string; payload: number; };
-    stateSelectedItem: number; setGoods: (value: number) => { type: string; payload: number; };
-  }) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default class Cart extends React.Component<CartProps, { data: ApolloQueryResult<any>, loading: boolean }> {
+  constructor(props: CartProps) {
     super(props)
     this.state = {data: {data: {}, loading: false, networkStatus: 0}, loading: false}
   }
@@ -50,9 +50,8 @@ export default class Cart extends React.Component<{
   renderGoodsInCart = (length: number) => {
     if (length === 0)
       return <div className='cart-name'>You cart is empty</div>
-    else
-      return <GoodsInCart stateCurrency={this.props.stateCurrency} stateSelectedItem={this.props.stateSelectedItem}
-                          setGoods={this.props.setGoods} data={this.state.data.data.category} />
+    return <GoodsInCart stateCurrency={this.props.stateCurrency} stateSelectedItem={this.props.stateSelectedItem}
+                        setGoods={this.props.setGoods} data={this.state.data.data.category} />
   }
 
   render() {

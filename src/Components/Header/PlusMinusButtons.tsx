@@ -1,8 +1,13 @@
 import React from 'react';
 
-export default class PlusMinusButtons extends React.Component<{setAmountUp: (productIndexes: (string | number[][] |
-  number)[]) => void, setAmountDown: (productIndexes: (string | number[][] | number)[]) => void | undefined,
-  goodsAmount: (string | number[][] | number)[][], goodsNumber: number}> {
+interface PlusMinusButtonsProps {
+  setAmountUp: (productIndexes: (string | number[][] | number)[]) => void
+  setAmountDown: (productIndexes: (string | number[][] | number)[]) => void | undefined
+  goodsAmount: (string | number[][] | number)[][]
+  goodsNumber: number
+}
+
+export default class PlusMinusButtons extends React.Component<PlusMinusButtonsProps> {
   render() {
     const { setAmountUp, setAmountDown, goodsAmount, goodsNumber } = this.props
     return (

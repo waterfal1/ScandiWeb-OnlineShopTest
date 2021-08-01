@@ -1,9 +1,15 @@
 import React from 'react';
 import '../../Pages/Goods/Goods.styles.scss';
 import { NavLink } from 'react-router-dom';
+import CurrentCurrency from './CurrentCurrency';
 
-export default class GoodsName extends React.Component<{stateCurrency: number, product: {id: string, name: string,
-    prices: {amount: string}[]}, choseGoods: (goodsId: string) => void}> {
+interface GoodsNameProps {
+  stateCurrency: number
+  product: {id: string, name: string, prices: {amount: string}[]}
+  choseGoods: (goodsId: string) => void
+}
+
+export default class GoodsName extends React.Component<GoodsNameProps> {
   render() {
     const { product, choseGoods } = this.props;
     return (
@@ -11,7 +17,7 @@ export default class GoodsName extends React.Component<{stateCurrency: number, p
         <p className='cart-first-text'>{product.name}</p>
         <p className='cart-first-text weight-normal'>{product.id}</p>
         <p className='cart-goods-padding'>
-          {sessionStorage.getItem('Currency') ? sessionStorage.getItem('Currency') : <>&#36;</>}
+          <CurrentCurrency />
           {product.prices[this.props.stateCurrency].amount}
         </p>
       </NavLink>

@@ -4,10 +4,14 @@ import AttributesCart from './AttributesCart';
 import SelectedAttributesHeader from '../Header/SelectedAttributesHeader';
 import NonSelectedAttributes from './NonSelectedAttribute';
 
-export default class AttributesContainer extends React.Component<{goodsAmount: (string | number[][] | number)[][],
-  goodsCounter: number, product: {attributes: {id: string, name: string,  items: { value: string }[]; }[]},
-  attributeSelected: (goodsNumber: number, attributeIndex: number, newAttributeIndex: number) => void}> {
+interface AttributesContainerProps {
+  goodsAmount: (string | number[][] | number)[][]
+  goodsCounter: number
+  product: {attributes: {id: string, name: string,  items: { value: string }[]; }[]}
+  attributeSelected: (goodsNumber: number, attributeIndex: number, newAttributeIndex: number) => void
+}
 
+export default class AttributesContainer extends React.Component<AttributesContainerProps> {
   goodsAttributesRendering = (attributes: { id: string; name: string; items: { value: string }[]}[],
     goodsCounter: number, goodsAmount: (string | number | number[][])[][], attributeSelected: (goodsNumber: number,
       attributeIndex: number, newAttributeIndex: number) => void) => {

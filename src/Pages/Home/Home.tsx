@@ -6,16 +6,20 @@ import NotInStock from '../../Components/Stock/NotInStock';
 import { query } from './getData'
 import { addGoodsToStorage, productsAttributes } from '../../Components/functions';
 
-export default class Home extends React.Component<{
-  setCurrency: (value: number) => { type: string, payload: number }, stateSelectedItem: number,
-  setGoods: (value: number) => { type: string, payload: number }, stateCurrency: number, categoryThings: string,
-  setNewCategory: (value: string) => { type: string, payload: string }}, { loading: boolean, counter: number,
+interface HomeProps {
+  setCurrency: (value: number) => { type: string, payload: number }
+  stateSelectedItem: number
+  setGoods: (value: number) => { type: string, payload: number }
+  stateCurrency: number
+  categoryThings: string
+  setNewCategory: (value: string) => { type: string, payload: string }
+}
+
+export default class Home extends React.Component<HomeProps, { loading: boolean, counter: number,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: ApolloQueryResult<any>, loadAttributes: boolean, attributes: [number[]] }> {
   private currentCategory: string;
-  constructor(props: { setCurrency: (value: number) => { type: string; payload: number; }; stateSelectedItem: number;
-  setGoods: (value: number) => { type: string; payload: number; }; stateCurrency: number; categoryThings: string;
-  setNewCategory: (value: string) => { type: string; payload: string; }; }) {
+  constructor(props: HomeProps) {
     super(props)
     this.state = {data: {data: {}, loading: false, networkStatus: 0}, loading: false, counter: 0, loadAttributes: false,
       attributes: [[0]]};

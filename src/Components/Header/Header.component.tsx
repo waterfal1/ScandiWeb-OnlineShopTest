@@ -7,17 +7,19 @@ import { ApolloQueryResult } from '@apollo/client';
 import { goodsCollection } from "../functions";
 import CurrenciesAndCart from "./CurrenciesAndCart";
 
-export default class Header extends React.Component<{stateCurrency: number,
+interface HeaderProps {
+  stateCurrency: number,
   setCurrency: (value: number) => {type: string, payload: number}, categoryThings: string,
   setNewCategory:  (value: string) => {type: string, payload: string}, stateSelectedItem: number,
-  setGoods: (value: number) => {type: string, payload: number} }, {cartBar: boolean, activeCategoryId: number,
+  setGoods: (value: number) => {type: string, payload: number}
+}
+
+export default class Header extends React.Component<HeaderProps, {cartBar: boolean, activeCategoryId: number,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   currentCurrency: string, cartWindowClose: boolean, loading: boolean, data: ApolloQueryResult<any> }> {
   private wrapperRef: React.RefObject<HTMLDivElement>;
 
-  constructor(props: { stateCurrency: number; setCurrency: (value: number) => { type: string; payload: number; };
-  categoryThings: string; setNewCategory: (value: string) => { type: string; payload: string; };
-  stateSelectedItem: number; setGoods: (value: number) => { type: string; payload: number; }; }) {
+  constructor(props: HeaderProps) {
     super(props)
     this.wrapperRef = React.createRef();
     this.state = {data: {data: {}, loading: false, networkStatus: 0}, cartBar: false, activeCategoryId: 0,

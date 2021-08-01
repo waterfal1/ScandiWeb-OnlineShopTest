@@ -1,7 +1,12 @@
 import React from 'react';
+import CurrentCurrency from '../Cart/CurrentCurrency';
 
-export default class GoodsNameAndCost extends React.Component<{product: {id: string, name: string, gallery: string[],
-    prices: {amount: string}[] }, stateCurrency: number}> {
+interface GoodsNameAndCostProps {
+  product: {id: string, name: string, gallery: string[], prices: {amount: string}[]}
+  stateCurrency: number
+}
+
+export default class GoodsNameAndCost extends React.Component<GoodsNameAndCostProps> {
   render() {
     const { product, stateCurrency} = this.props
     return (
@@ -9,7 +14,7 @@ export default class GoodsNameAndCost extends React.Component<{product: {id: str
         <p className='cart-window-name'>{product.name}</p>
         <p className='cart-window-name'>{product.id}</p>
         <p className='goods-cost'>
-          {sessionStorage.getItem('Currency') ? sessionStorage.getItem('Currency') : <>&#36;</>}
+          <CurrentCurrency />
           {product.prices[stateCurrency].amount}
         </p>
       </>

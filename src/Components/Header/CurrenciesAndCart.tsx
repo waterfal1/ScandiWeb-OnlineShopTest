@@ -3,12 +3,23 @@ import HeaderCurrencies from "./Currencies";
 import cart from "../../assets/cart.svg";
 import CartMenu from "./CartMenu";
 
-export default class CurrenciesAndCart extends React.Component<{changeCurrency: () => void, currentCurrency: string,
-  currencies: [{ currency: string }], handleCurrency: (index: string) => void, setCartBar: () => void,
-  goodsAmount: (string | number[][] | number)[][], cartWindowClose: boolean, toggleCartWindow: () => void,
-  stateCurrency: number, setCurrency: (value: number) => {type: string, payload: number}, stateSelectedItem: number,
-  setGoods: (value: number) => {type: string, payload: number}, cartBar: boolean}> {
+interface CurrenciesAndCartProps {
+  changeCurrency: () => void
+  currentCurrency: string
+  currencies: [{ currency: string }]
+  handleCurrency: (index: string) => void
+  setCartBar: () => void
+  goodsAmount: (string | number[][] | number)[][]
+  cartWindowClose: boolean
+  toggleCartWindow: () => void
+  stateCurrency: number
+  setCurrency: (value: number) => {type: string, payload: number}
+  stateSelectedItem: number
+  setGoods: (value: number) => {type: string, payload: number}
+  cartBar: boolean
+}
 
+export default class CurrenciesAndCart extends React.Component<CurrenciesAndCartProps> {
   cartRendering = (cartWindowClose: boolean, toggleCartWindow: () => void) => {
     if (cartWindowClose)
       return <CartMenu toggleCartWindow={toggleCartWindow} stateCurrency={this.props.stateCurrency}

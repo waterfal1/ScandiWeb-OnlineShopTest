@@ -1,10 +1,15 @@
 import React from 'react';
 import '../../Pages/Goods/Goods.styles.scss';
 
-export default class Images extends React.Component<{
-  imagesState: number[], product: { gallery: string[] }, imageUp: (index: number, length: number) => void,
-  goodsCounter: number, imageDown: (index: number, length: number) => void }> {
+interface ImagesProps {
+  imagesState: number[]
+  product: { gallery: string[]}
+  imageUp: (index: number, length: number) => void
+  goodsCounter: number
+  imageDown: (index: number, length: number) => void
+}
 
+export default class Images extends React.Component<ImagesProps> {
   imageSwitcher = (length: number, goodsCounter: number, imageUp: (index: number, length: number) => void,
                    imageDown: (index: number, length: number) => void) => {
     if (length > 1)

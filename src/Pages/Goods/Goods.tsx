@@ -5,20 +5,22 @@ import { ApolloQueryResult } from '@apollo/client'
 import Description from '../../Components/Goods/Description'
 import PhotoColumn from '../../Components/Goods/PhotoColumn';
 import AttributesRows from '../../Components/Goods/AtrributesRows';
-import {addGoodsToStorage, productsAttributes} from "../../Components/functions";
+import { addGoodsToStorage, productsAttributes } from '../../Components/functions';
+import CurrentCurrency from '../../Components/Cart/CurrentCurrency';
+import MainPhoto from '../../Components/Header/MainPhoto';
 
-export default class Goods extends React.Component<{
-  stateCurrency: number, setCurrency: (value: number) => { type: string, payload: number }, stateSelectedItem: number,
+interface GoodsProps {
+  stateCurrency: number
+  setCurrency: (value: number) => { type: string, payload: number }
+  stateSelectedItem: number,
   setGoods: (value: number) => { type: string, payload: number }
-}, {
+}
+
+export default class Goods extends React.Component<GoodsProps, {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: ApolloQueryResult<any>, loading: boolean,
-  imageState: number, attributeNumber: number, counter: number, attributes: [number[]],
-  loadAttributes: boolean
-}> {
-  constructor(props: {
-    stateCurrency: number; setCurrency: (value: number) => { type: string; payload: number; };
-    stateSelectedItem: number; setGoods: (value: number) => { type: string; payload: number; }; }) {
+  data: ApolloQueryResult<any>, loading: boolean, imageState: number, attributeNumber: number, counter: number,
+  attributes: [number[]], loadAttributes: boolean}> {
+  constructor(props: GoodsProps) {
     super(props)
     this.state = { data: {data: {}, loading: false, networkStatus: 0}, loading: false, imageState: 0,
       attributeNumber: 0, counter: 0, attributes: [[]], loadAttributes: false
@@ -115,12 +117,7 @@ export default class Goods extends React.Component<{
     return (
       <div className='goods-page-container'>
         <PhotoColumn changeImage={this.changeImage} product={products[productIndex]} />
-
-        <div className='goods-page-main-photo'>
-          <img className='goods-page-main-photo-flex' src={products[productIndex].gallery[imageState]}
-               alt='picture2' />
-        </div>
-
+        <MainPhoto product={products[productIndex]} imageState={imageState} />
         <div className='goods-description'>
           <p className='goods-name'> {products[productIndex].name}</p>
           <p className='goods-name weight-normal'> {products[productIndex].id}</p>
@@ -131,10 +128,9 @@ export default class Goods extends React.Component<{
 
           <p className='price'>{products[productIndex].prices[this.props.stateCurrency].__typename}:</p>
           <p className='price price-padding'>
-            {sessionStorage.getItem('Currency') ? sessionStorage.getItem('Currency') : <>&#36;</>}
+            <CurrentCurrency />
             {products[productIndex].prices[this.props.stateCurrency].amount}
           </p>
-
           {this.renderButton(products, productIndex, attributes)}
           <Description description={products[productIndex].description} />
         </div>

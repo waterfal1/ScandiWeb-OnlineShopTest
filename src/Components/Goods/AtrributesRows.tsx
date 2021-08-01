@@ -4,12 +4,17 @@ import AttributeName from './AttributeName';
 import AttributeSelected from './AttributeSelected';
 import AttributeNonSelected from './AttributeNonSelected';
 
-export default class AttributesRows extends React.Component<{attributes: number[][]
-  attributeSelected: (productIndex: number, attributeIndex: number, index: number) => void,
-  attributeNonSelected: (productIndex: number, attributeIndex: number, index: number) => void,
-  loadAttributes: boolean, productIndex: number, product: {attributes: {id: string, name: string,
-  items: { value: string, displayValue: string; }[];}[]}}> {
+interface AtrributesRowsProps {
+  attributes: number[][]
+  attributeNonSelected: (productIndex: number, attributeIndex: number, index: number) => void
+  attributeSelected: (productIndex: number, attributeIndex: number, index: number) => void
+  loadAttributes: boolean
+  productIndex: number
+  product: {attributes: {id: string, name: string
+  items: { value: string, displayValue: string; }[]}[]}
+}
 
+export default class AttributesRows extends React.Component<AtrributesRowsProps> {
   renderAttributesContainer = (attributes: number[][], product: {attributes: {id: string, name: string,
     items: { value: string, displayValue: string; }[];}[]}, productIndex: number, loadAttributes: boolean,
     attributeSelected: (productIndex: number, attributeIndex: number, index: number) => void,

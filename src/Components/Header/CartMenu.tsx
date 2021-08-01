@@ -4,23 +4,26 @@ import {amountUpHelper, goodsCollection, removeGoods, searchIndexes} from '../fu
 import { ApolloQueryResult } from '@apollo/client';
 import * as _ from 'lodash';
 import GoodsAttributes from './GoodsAttributes';
-import CartWindowBag from "./CartWindowBag";
-import TotalCost from "./TotalCost";
-import Buttons from "./Buttons";
+import CartWindowBag from './CartWindowBag';
+import TotalCost from './TotalCost';
+import Buttons from './Buttons';
 
-export default class CartMenu extends React.Component<{stateCurrency: number,
-  setCurrency: (value: number) => {type: string, payload: number}, toggleCartWindow: () => void,
-  stateSelectedItem: number, setGoods: (value: number) => {type: string, payload: number},
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
- }, { data:  ApolloQueryResult<any>, loading: boolean, amounts: number[],
-  attribute: number, windowState: boolean }> {
+interface CartMenuProps {
+  stateCurrency: number
+  setCurrency: (value: number) => {type: string, payload: number}
+  toggleCartWindow: () => void
+  stateSelectedItem: number
+  setGoods: (value: number) => {type: string, payload: number}
+}
 
-  constructor(props: { stateCurrency: number; setCurrency: (value: number) => { type: string; payload: number; };
-  toggleCartWindow: () => void; stateSelectedItem: number;
-  setGoods: (value: number) => { type: string; payload: number; }}) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default class CartMenu extends React.Component<CartMenuProps, { data:  ApolloQueryResult<any>, loading: boolean,
+  amounts: number[], attribute: number, windowState: boolean }> {
+
+  constructor(props: CartMenuProps) {
     super(props)
-    this.state = {data: {data: {}, loading: false, networkStatus: 0}, loading: false, amounts: [],
-      attribute: 0, windowState: false}
+    this.state = {data: {data: {}, loading: false, networkStatus: 0}, loading: false, amounts: [], attribute: 0,
+      windowState: false}
   }
 
   componentDidMount(): void {

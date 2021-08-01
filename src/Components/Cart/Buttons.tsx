@@ -1,9 +1,12 @@
 import React from 'react';
 import '../../Pages/Goods/Goods.styles.scss';
 
-export default class Buttons extends React.Component<{
+interface ButtonsProps {
   setAmountUp: (input: (string | number[][] | number)[]) => void, goodsAmount: (string | number[][] | number)[][],
-  setAmountDown: (input: (string | number[][] | number)[]) => void | undefined, goodsCounter: number }> {
+  setAmountDown: (input: (string | number[][] | number)[]) => void | undefined, goodsCounter: number
+}
+
+export default class Buttons extends React.Component<ButtonsProps> {
   render() {
     const { goodsCounter, goodsAmount, setAmountUp, setAmountDown } = this.props;
     return (

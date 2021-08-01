@@ -1,15 +1,21 @@
 import React from 'react';
 import Attributes from './Attributes';
-import GoodsNameAndCost from "./GoodsNameAndCost";
-import PlusMinusButtons from "./PlusMinusButtons";
-import GoodsImage from "./GoodsImage";
+import GoodsNameAndCost from './GoodsNameAndCost';
+import PlusMinusButtons from './PlusMinusButtons';
+import GoodsImage from './GoodsImage';
 
-export default class GoodsAttributes extends React.Component<{attributeSelected: (index: number) => void,
-  setAmountUp: (productIndexes: (string | number[][] | number)[]) => void,
-  setAmountDown: (productIndexes: (string | number[][] | number)[]) => void | undefined,
-  goodsAmount: (string | number[][] | number)[][], stateCurrency: number, productsIndexes: number[],
+interface GoodsAttributesProps {
+  attributeSelected: (index: number) => void
+  setAmountUp: (productIndexes: (string | number[][] | number)[]) => void
+  setAmountDown: (productIndexes: (string | number[][] | number)[]) => void | undefined
+  goodsAmount: (string | number[][] | number)[][]
+  stateCurrency: number
+  productsIndexes: number[]
   products: {id: string, name: string, gallery: string[], prices: {amount: string}[],
-    attributes: {id: string, name: string,  items: { value: string, displayValue: string; }[]; }[] }[]}> {
+    attributes: {id: string, name: string,  items: { value: string, displayValue: string; }[]; }[] }[]
+}
+
+export default class GoodsAttributes extends React.Component<GoodsAttributesProps> {
 
   productsRender = (productsIndexes: number[], products: {id: string, name: string, gallery: string[],
     prices: {amount: string}[], attributes: {id: string, name: string,  items: { value: string,
@@ -41,10 +47,12 @@ export default class GoodsAttributes extends React.Component<{attributeSelected:
        return products[productIndex].attributes
         .map((element: {name: string, items: {value: string, displayValue: string}[]}, index: number) => (
           <div key={index}>
-            {element.name}{element.items.map((item: {value: string, displayValue: string}, ind: number) => {
+            {element.name}
+            {element.items.map((item: {value: string, displayValue: string}, attributeNumber: number) => {
               // @ts-ignore
-              if (goodsAmount[goodsNumber][1][0][index] == ind)
-                return <Attributes key={ind} attributeSelected={() => attributeSelected(ind)} value={item.value} />
+              if (goodsAmount[goodsNumber][1][0][index] == attributeNumber)
+                return <Attributes key={attributeNumber} attributeSelected={() => attributeSelected(attributeNumber)}
+                                   value={item.value} />
               return null
             })}
           </div>
