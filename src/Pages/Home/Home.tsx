@@ -1,10 +1,10 @@
 import React from 'react';
 import './Home.styles.scss';
-import { ApolloQueryResult } from '@apollo/client';
 import InStock from '../../Components/Stock/InStock';
 import NotInStock from '../../Components/Stock/NotInStock';
 import { query } from './getData'
 import { addGoodsToStorage, productsAttributes } from '../../Components/functions';
+import {MyGoods} from "./ProductsClass";
 
 interface HomeProps {
   setCurrency: (value: number) => { type: string, payload: number }
@@ -15,13 +15,44 @@ interface HomeProps {
   setNewCategory: (value: string) => { type: string, payload: string }
 }
 
-export default class Home extends React.Component<HomeProps, { loading: boolean, counter: number,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: ApolloQueryResult<any>, loadAttributes: boolean, attributes: [number[]] }> {
+interface MyHomeState {
+  loading: boolean
+  counter: number
+  data: MyGoods
+  loadAttributes: boolean
+  attributes: number[][]
+}
+
+export default class Home extends React.Component<HomeProps, MyHomeState> {
   private currentCategory: string;
   constructor(props: HomeProps) {
     super(props)
-    this.state = {data: {data: {}, loading: false, networkStatus: 0}, loading: false, counter: 0, loadAttributes: false,
+    this.state = {data: new MyGoods( {
+      category: {
+        __typename: '',
+        name: '',
+        products: [{
+          id: '',
+          name: '',
+          inStock: '',
+          gallery: [''],
+          description: '',
+          category: '',
+          attributes: [{
+            id: '',
+            name: '',
+            items: [{
+              value: '',
+              displayValue: ''
+            }]
+          }],
+          prices: [{
+            __typename: '',
+            currency: '',
+            amount: '' }]
+        }]
+      }
+    }), loading: false, counter: 0, loadAttributes: false,
       attributes: [[0]]};
     this.currentCategory = '';
   }
@@ -30,7 +61,7 @@ export default class Home extends React.Component<HomeProps, { loading: boolean,
     this.fetchData()
   }
 
-  componentDidUpdate(prevProps:Readonly<{categoryThings: string }>): void {
+  componentDidUpdate(prevProps:Readonly<{categoryThings: string}>): void {
     if (this.props.categoryThings !== prevProps.categoryThings) {
       this.fetchData();
     }
@@ -63,7 +94,7 @@ export default class Home extends React.Component<HomeProps, { loading: boolean,
       }
     `)
       .then((result) => {
-        this.setState({loading: true, data: result})
+        this.setState({loading: true, data: new MyGoods(result.data)})
       })
   }
 
@@ -79,10 +110,10 @@ export default class Home extends React.Component<HomeProps, { loading: boolean,
   }
 
   productAttributes = (): void => {
-    let products = this.state.data.data.category.products
-    this.setState({ loadAttributes: true })
-    products = productsAttributes(products)
-    this.setState({ attributes: products})
+    const products = this.state.data.data.category.products;
+    this.setState({ loadAttributes: true });
+    const result = productsAttributes(products)
+    this.setState({ attributes: result})
   };
 
   changeClass = (): void => {

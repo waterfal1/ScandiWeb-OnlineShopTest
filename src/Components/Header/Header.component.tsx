@@ -3,9 +3,9 @@ import './Header.style.scss';
 import { NavLink } from 'react-router-dom';
 import logo from '../../assets/a-logo.svg';
 import { query } from '../../Pages/Home/getData';
-import { ApolloQueryResult } from '@apollo/client';
 import { goodsCollection } from "../functions";
 import CurrenciesAndCart from "./CurrenciesAndCart";
+import {MyGoods} from "../../Pages/Home/ProductsClass";
 
 interface HeaderProps {
   stateCurrency: number,
@@ -14,16 +14,48 @@ interface HeaderProps {
   setGoods: (value: number) => {type: string, payload: number}
 }
 
-export default class Header extends React.Component<HeaderProps, {cartBar: boolean, activeCategoryId: number,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  currentCurrency: string, cartWindowClose: boolean, loading: boolean, data: ApolloQueryResult<any> }> {
+interface MyHeaderState {
+  cartBar: boolean
+  activeCategoryId: number
+  currentCurrency: string
+  cartWindowClose: boolean
+  loading: boolean
+  data: MyGoods
+}
+
+export default class Header extends React.Component<HeaderProps, MyHeaderState> {
   private wrapperRef: React.RefObject<HTMLDivElement>;
 
   constructor(props: HeaderProps) {
     super(props)
     this.wrapperRef = React.createRef();
-    this.state = {data: {data: {}, loading: false, networkStatus: 0}, cartBar: false, activeCategoryId: 0,
-      currentCurrency: '$', cartWindowClose: false, loading: false }
+    this.state = {data: new MyGoods( {
+          category: {
+            __typename: '',
+            name: '',
+            products: [{
+              id: '',
+              name: '',
+              inStock: '',
+              gallery: [''],
+              description: '',
+              category: '',
+              attributes: [{
+                id: '',
+                name: '',
+                items: [{
+                  value: '',
+                  displayValue: ''
+                }]
+              }],
+              prices: [{
+                __typename: '',
+                currency: '',
+                amount: '' }]
+            }]
+          }
+        }),
+      cartBar: false, activeCategoryId: 0, currentCurrency: '$', cartWindowClose: false, loading: false }
   }
 
   componentDidMount(): void {
@@ -39,7 +71,7 @@ export default class Header extends React.Component<HeaderProps, {cartBar: boole
       }}}
     `)
         .then(result => {
-          this.setState({loading: true, data: result})
+          this.setState({loading: true, data: new MyGoods(result.data)})
         })
     document.addEventListener('mousedown', this.handleClickOutside);
   }
@@ -71,8 +103,10 @@ export default class Header extends React.Component<HeaderProps, {cartBar: boole
     const products = this.state.data.data.category.products;
     return products
       .map((product: {category: string}) => product.category)
-      .reduce((accum: string, current: string) => {
+      // @ts-ignore
+      .reduce((accum, current) => {
         return accum.includes(current) ? accum : [accum, current]})
+      // @ts-ignore
       .map((category: string, index: number) => {
       return (
         <NavLink key={index} to='/'>

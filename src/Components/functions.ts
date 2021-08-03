@@ -42,8 +42,7 @@ function removeGoods(productIndexes: (string | number[][] | number)[]) {
 function productsAttributes(products: { attributes: { name: string; items: { displayValue: string; }[]; }[]; }[]) {
   return products.map((product: {attributes: {name: string, items: {displayValue: string}[]}[]}) => {
     if (product.attributes.length > 0)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      return product.attributes.map((item) => 0)
+      return product.attributes.map(() => 0)
     else
       return []})
 }

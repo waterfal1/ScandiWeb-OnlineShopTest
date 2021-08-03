@@ -15,6 +15,7 @@ interface GoodsInCartProps {
   setGoods: (value: number) => { type: string, payload: number }
 }
 
+
 export default class GoodsInCart extends React.Component<GoodsInCartProps, {setAmount: boolean, imagesState: number[]}> {
   constructor(props: GoodsInCartProps) {
     super(props)

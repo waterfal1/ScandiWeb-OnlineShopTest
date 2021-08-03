@@ -1,13 +1,13 @@
 import React from 'react';
 import './Goods.styles.scss';
 import { query } from '../Home/getData'
-import { ApolloQueryResult } from '@apollo/client'
 import Description from '../../Components/Goods/Description'
 import PhotoColumn from '../../Components/Goods/PhotoColumn';
 import AttributesRows from '../../Components/Goods/AtrributesRows';
 import { addGoodsToStorage, productsAttributes } from '../../Components/functions';
 import CurrentCurrency from '../../Components/Cart/CurrentCurrency';
 import MainPhoto from '../../Components/Header/MainPhoto';
+import {MyGoods} from '../Home/ProductsClass';
 
 interface GoodsProps {
   stateCurrency: number
@@ -16,14 +16,45 @@ interface GoodsProps {
   setGoods: (value: number) => { type: string, payload: number }
 }
 
-export default class Goods extends React.Component<GoodsProps, {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: ApolloQueryResult<any>, loading: boolean, imageState: number, attributeNumber: number, counter: number,
-  attributes: [number[]], loadAttributes: boolean}> {
+interface MyGoodsState {
+  data: MyGoods,
+  loading: boolean,
+  imageState: number,
+  attributeNumber: number,
+  counter: number,
+  attributes: number[][],
+  loadAttributes: boolean
+}
+
+export default class Goods extends React.Component<GoodsProps, MyGoodsState> {
   constructor(props: GoodsProps) {
     super(props)
-    this.state = { data: {data: {}, loading: false, networkStatus: 0}, loading: false, imageState: 0,
-      attributeNumber: 0, counter: 0, attributes: [[]], loadAttributes: false
+    this.state = { data: new MyGoods( {
+          category: {
+            __typename: '',
+            name: '',
+            products: [{
+              id: '',
+              name: '',
+              inStock: '',
+              gallery: [''],
+              category: '',
+              description: '',
+              attributes: [{
+                id: '',
+                name: '',
+                items: [{
+                  value: '',
+                  displayValue: ''
+                }]
+              }],
+              prices: [{
+                __typename: '',
+                currency: '',
+                amount: '' }]
+            }]
+          }}),
+      loading: false, imageState: 0, attributeNumber: 0, counter: 0, attributes: [[]], loadAttributes: false
     }
   }
 
@@ -54,7 +85,7 @@ export default class Goods extends React.Component<GoodsProps, {
       }
     `)
       .then(result => {
-        this.setState({loading: true, data: result});
+        this.setState({loading: true, data: new MyGoods(result.data)});
       })
   }
 
@@ -81,10 +112,10 @@ export default class Goods extends React.Component<GoodsProps, {
   }
 
   productAttributes = (): void => {
-    let products = this.state.data.data.category.products
+    const products = this.state.data.data.category.products
     this.setState({ loadAttributes: true })
-    products = productsAttributes(products)
-    this.setState({ attributes: products})
+    const result = productsAttributes(products)
+    this.setState({ attributes: result})
   }
 
   findProductIndex = (productId: string | null, products: {id: string, name: string, gallery: string[],
@@ -98,7 +129,7 @@ export default class Goods extends React.Component<GoodsProps, {
       }).filter((value) => value || value === 0)[0]
   }
 
-  renderButton = (products: {id: string, inStock: string}[], productIndex: number, attributes: [number[]]) => {
+  renderButton = (products: {id: string, inStock: string}[], productIndex: number, attributes: number[][]) => {
     if (products[productIndex].inStock)
       return <button onClick={() => this.addToCart(products[productIndex].id, attributes[productIndex])}
                      className='add-to-cart-btn pointer'>ADD TO CART</button>

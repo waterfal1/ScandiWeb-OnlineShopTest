@@ -1,8 +1,12 @@
 import React from 'react';
 import './Header.style.scss';
 
-export default class HeaderCurrencies extends React.Component<{
-  currencies: [{ currency: string }], handleCurrency: (input: string) => void }> {
+interface HeaderCurrenciesProps {
+  currencies: { __typename: string; currency: string; amount: string; }[],
+  handleCurrency: (input: string) => void
+}
+
+export default class HeaderCurrencies extends React.Component<HeaderCurrenciesProps> {
 
   currenciesRender = () => {
     const currenciesSigns = [<>&#36;</>, <>&#163;</>, <>&#36;</>, <>&#165;</>, <>&#8381;</>]

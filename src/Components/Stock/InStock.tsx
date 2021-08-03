@@ -4,7 +4,7 @@ import { NavLink } from 'react-router-dom';
 
 export default class InStock extends React.Component<{
   products: { id: string, name: string, gallery: string[], prices: { amount: string, currency: string }[] }[],
-  attributes: [number[]], counter: (input: string, input2: number[]) => void, choseGoods: (input: string) => void,
+  attributes: number[][], counter: (input: string, input2: number[]) => void, choseGoods: (input: string) => void,
   item: number, stateCurrency: number}> {
   render() {
     const { item, choseGoods, counter, products, attributes } = this.props;

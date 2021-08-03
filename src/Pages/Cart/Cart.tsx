@@ -1,9 +1,9 @@
 import React from 'react';
 import './Cart.styles.scss';
 import { query } from '../Home/getData';
-import { ApolloQueryResult } from '@apollo/client';
 import GoodsInCart from '../../Components/Cart/Cart';
 import { goodsCollection } from '../../Components/functions';
+import {MyGoods} from '../Home/ProductsClass';
 
 interface CartProps {
   stateCurrency: number
@@ -12,11 +12,35 @@ interface CartProps {
   setGoods: (value: number) => { type: string, payload: number }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default class Cart extends React.Component<CartProps, { data: ApolloQueryResult<any>, loading: boolean }> {
+export default class Cart extends React.Component<CartProps, { data: MyGoods, loading: boolean }> {
   constructor(props: CartProps) {
     super(props)
-    this.state = {data: {data: {}, loading: false, networkStatus: 0}, loading: false}
+    this.state = {data: new MyGoods( {
+          category: {
+            __typename: '',
+            name: '',
+            products: [{
+              id: '',
+              name: '',
+              inStock: '',
+              gallery: [''],
+              category: '',
+              description: '',
+              attributes: [{
+                id: '',
+                name: '',
+                items: [{
+                  value: '',
+                  displayValue: ''
+                }]
+              }],
+              prices: [{
+                __typename: '',
+                currency: '',
+                amount: '' }]
+            }]
+          }
+        }), loading: false}
   }
 
   componentDidMount(): void {
@@ -43,7 +67,7 @@ export default class Cart extends React.Component<CartProps, { data: ApolloQuery
       }
     `)
       .then(result => {
-        this.setState({loading: true, data: result})
+        this.setState({loading: true, data: new MyGoods(result.data)})
       })
   }
 

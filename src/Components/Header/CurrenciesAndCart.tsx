@@ -6,7 +6,7 @@ import CartMenu from "./CartMenu";
 interface CurrenciesAndCartProps {
   changeCurrency: () => void
   currentCurrency: string
-  currencies: [{ currency: string }]
+  currencies: { __typename: string; currency: string; amount: string; }[]
   handleCurrency: (index: string) => void
   setCartBar: () => void
   goodsAmount: (string | number[][] | number)[][]

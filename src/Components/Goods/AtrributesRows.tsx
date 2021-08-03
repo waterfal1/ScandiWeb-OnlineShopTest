@@ -15,6 +15,7 @@ interface AtrributesRowsProps {
 }
 
 export default class AttributesRows extends React.Component<AtrributesRowsProps> {
+
   renderAttributesContainer = (attributes: number[][], product: {attributes: {id: string, name: string,
     items: { value: string, displayValue: string; }[];}[]}, productIndex: number, loadAttributes: boolean,
     attributeSelected: (productIndex: number, attributeIndex: number, index: number) => void,
