@@ -11,8 +11,8 @@ import { setNewCategory } from './store/CategoryWasChosen/actions';
 import { setGoods } from './store/ChoseGoods/actions';
 
 const client = new ApolloClient({
-  uri: 'http://localhost:4000',
-  cache: new InMemoryCache()
+  uri: "https://online-shop-2023-156725473551.herokuapp.com/",
+  cache: new InMemoryCache(),
 });
 
 const store = createStore(rootReducer);
