@@ -163,7 +163,7 @@ export default class Goods extends React.Component<GoodsProps, MyGoodsState> {
             {products[productIndex].prices[this.props.stateCurrency].amount}
           </p>
           {this.renderButton(products, productIndex, attributes)}
-          <Description description={products[productIndex].description} />
+          {products[productIndex].description}
         </div>
       </div>
     );
